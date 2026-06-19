@@ -9,6 +9,7 @@ export interface Book {
   description: string;
   coverColor: string;
   stock: number;
+  isbn?: string;
 }
 
 export const books: Book[] = [
@@ -23,6 +24,7 @@ export const books: Book[] = [
     description: 'Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived.',
     coverColor: '#1B4332',
     stock: 15,
+    isbn: '9780525559474',
   },
   {
     id: '2',
@@ -35,6 +37,7 @@ export const books: Book[] = [
     description: 'A revolutionary system to get 1 percent better every day. Learn how tiny changes in behavior can lead to remarkable results in your life and work.',
     coverColor: '#2D5016',
     stock: 22,
+    isbn: '9780735211292',
   },
   {
     id: '3',
@@ -47,6 +50,7 @@ export const books: Book[] = [
     description: 'A young boy discovers a mysterious book in post-war Barcelona, setting off a labyrinthine tale of love, murder, and the power of literature.',
     coverColor: '#3D2B1F',
     stock: 8,
+    isbn: '9781594200823',
   },
   {
     id: '4',
@@ -59,6 +63,7 @@ export const books: Book[] = [
     description: 'A masterpiece of Hindi literature depicting the plight of Indian peasants. Hori\'s lifelong dream of owning a cow becomes a metaphor for the struggles of rural India.',
     coverColor: '#8B4513',
     stock: 18,
+    isbn: '9788126719655',
   },
   {
     id: '5',
@@ -83,6 +88,7 @@ export const books: Book[] = [
     description: 'The legendary manga that started it all. Monkey D. Luffy sets sail to find the legendary treasure and become King of the Pirates.',
     coverColor: '#C41E3A',
     stock: 30,
+    isbn: '9781569319017',
   },
   {
     id: '7',
@@ -95,6 +101,7 @@ export const books: Book[] = [
     description: 'A nostalgic story of loss and sexuality set in 1960s Tokyo. Toru Watanabe looks back on his days as a student and the two women who shaped his life.',
     coverColor: '#2C3E50',
     stock: 12,
+    isbn: '9780375704024',
   },
   {
     id: '8',
@@ -107,6 +114,7 @@ export const books: Book[] = [
     description: 'The riveting first-person narrative of Kvothe, a legendary figure who grew from a gifted young man into the most notorious wizard his world has ever seen.',
     coverColor: '#4A235A',
     stock: 6,
+    isbn: '9780756404079',
   },
   {
     id: '9',
@@ -143,6 +151,7 @@ export const books: Book[] = [
     description: 'Humanity lives behind massive walls to protect themselves from Titans — giant humanoid creatures who devour humans. When the walls are breached, Eren vows revenge.',
     coverColor: '#2E4057',
     stock: 20,
+    isbn: '9781612620244',
   },
   {
     id: '12',
@@ -155,6 +164,7 @@ export const books: Book[] = [
     description: 'The Japanese secret to a long and happy life. Discover your ikigai — the reason you get up in the morning — and find joy and purpose in every day.',
     coverColor: '#7A9E7E',
     stock: 18,
+    isbn: '9780143130727',
   },
   {
     id: '13',
@@ -167,6 +177,7 @@ export const books: Book[] = [
     description: 'Last night I dreamt I went to Manderley again. A timeless gothic romance about obsession, secrets, and the haunting shadow of the first Mrs. de Winter.',
     coverColor: '#1C2833',
     stock: 9,
+    isbn: '9780380730407',
   },
   {
     id: '14',
@@ -203,6 +214,7 @@ export const books: Book[] = [
     description: 'In a world where most people have superpowers, Izuku Midoriya is born without any. But he refuses to give up on his dream of becoming the greatest hero.',
     coverColor: '#1F618D',
     stock: 28,
+    isbn: '9781421582689',
   },
   {
     id: '17',
@@ -215,6 +227,7 @@ export const books: Book[] = [
     description: 'A dreamlike novel following a teenage runaway and an old man who can speak to cats, weaving two parallel stories into a mesmerizing tapestry.',
     coverColor: '#17202A',
     stock: 13,
+    isbn: '9781400079278',
   },
   {
     id: '18',
@@ -227,6 +240,7 @@ export const books: Book[] = [
     description: 'A shepherd boy\'s journey to find treasure leads him across continents in this timeless allegorical novel about following your dreams and listening to your heart.',
     coverColor: '#B7950B',
     stock: 35,
+    isbn: '9780062315007',
   },
   {
     id: '19',
@@ -239,6 +253,7 @@ export const books: Book[] = [
     description: 'A collection of 103 poems by the Nobel laureate, originally written in Bengali and translated into English by the poet himself. A spiritual and lyrical masterpiece.',
     coverColor: '#5B2C6F',
     stock: 16,
+    isbn: '9780415233347',
   },
   {
     id: '20',
@@ -263,6 +278,7 @@ export const books: Book[] = [
     description: 'A high school student discovers a supernatural notebook that kills anyone whose name is written in it. A psychological thriller about justice, power, and morality.',
     coverColor: '#1C1C1C',
     stock: 22,
+    isbn: '9781421501680',
   },
   {
     id: '22',
@@ -275,6 +291,7 @@ export const books: Book[] = [
     description: 'From the Big Bang to black holes, Hawking takes the reader on a breathtaking journey through space, time, and the fundamental nature of the universe.',
     coverColor: '#154360',
     stock: 14,
+    isbn: '9780553380163',
   },
 ];
 
