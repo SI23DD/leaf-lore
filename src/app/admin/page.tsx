@@ -36,6 +36,8 @@ const adminLinks = [
 const LANGUAGES = ['English', 'Japanese', 'Hindi', 'Marathi', 'Manga/Anime'];
 const GENRES = ['Fiction', 'Non-fiction', 'Mystery', 'Romance', 'Fantasy', 'Self-help', "Children's", 'Manga', 'Poetry', 'History'];
 
+const statDelays = ['delay-100', 'delay-200', 'delay-300', 'delay-400'];
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -102,10 +104,14 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ backgroundColor: '#FAF7F2' }} className="min-h-screen flex">
-      {/* Toast */}
+      {/* Toast — slideDown animation */}
       {toast && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium"
-          style={{ backgroundColor: '#2D5016' }}>{toast}</div>
+        <div
+          className="fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium animate-slideDown"
+          style={{ backgroundColor: '#2D5016' }}
+        >
+          {toast}
+        </div>
       )}
 
       {/* Sidebar */}
@@ -144,10 +150,14 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Stats */}
+        {/* Stats — each card gets scaleIn with staggered delays */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statCards.map(({ label, value, icon, color }) => (
-            <div key={label} className="rounded-2xl p-5 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #E8E0D5' }}>
+          {statCards.map(({ label, value, icon, color }, idx) => (
+            <div
+              key={label}
+              className={`rounded-2xl p-5 shadow-sm animate-scaleIn ${statDelays[idx]} hover-lift`}
+              style={{ backgroundColor: 'white', border: '1px solid #E8E0D5', opacity: 0 }}
+            >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-2xl">{icon}</span>
                 {loading && <span className="text-xs text-gray-400">loading…</span>}
@@ -194,8 +204,17 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map(order => (
-                      <tr key={order.id} className="border-b last:border-0" style={{ borderColor: '#F0EBE3' }}>
+                    {orders.map((order, rowIdx) => (
+                      <tr
+                        key={order.id}
+                        className={`border-b last:border-0 animate-fadeInUp`}
+                        style={{
+                          borderColor: '#F0EBE3',
+                          animationDelay: `${0.05 * rowIdx + 0.2}s`,
+                          opacity: 0,
+                          animationFillMode: 'forwards',
+                        }}
+                      >
                         <td className="py-3">
                           <div className="font-medium text-gray-800 text-xs">{order.customer_name}</div>
                           <div className="text-gray-400 text-xs">{order.customer_email}</div>
@@ -230,37 +249,60 @@ export default function AdminDashboard() {
               {(['title', 'author'] as const).map(field => (
                 <div key={field}>
                   <label className="text-xs font-medium text-gray-600 block mb-1 capitalize">{field}</label>
-                  <input type="text" required value={formData[field]}
+                  <input
+                    type="text"
+                    required
+                    value={formData[field]}
                     onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))}
                     placeholder={`Book ${field}`}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }} />
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
+                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                  />
                 </div>
               ))}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs font-medium text-gray-600 block mb-1">Price (₹)</label>
-                  <input type="number" required min="1" value={formData.price}
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={formData.price}
                     onChange={e => setFormData(p => ({ ...p, price: e.target.value }))}
                     placeholder="₹"
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }} />
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
+                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                  />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-600 block mb-1">Stock</label>
-                  <input type="number" min="0" value={formData.stock}
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.stock}
                     onChange={e => setFormData(p => ({ ...p, stock: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }} />
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
+                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                  />
                 </div>
               </div>
               {(['language', 'genre'] as const).map(field => (
                 <div key={field}>
                   <label className="text-xs font-medium text-gray-600 block mb-1 capitalize">{field}</label>
-                  <select value={formData[field]}
+                  <select
+                    value={formData[field]}
                     onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2', color: '#1a1a1a' }}>
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2', color: '#1a1a1a' }}
+                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                  >
                     {(field === 'language' ? LANGUAGES : GENRES).map(v => <option key={v}>{v}</option>)}
                   </select>
                 </div>
@@ -276,11 +318,16 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-600 block mb-1">Description</label>
-                <textarea rows={2} value={formData.description}
+                <textarea
+                  rows={2}
+                  value={formData.description}
                   onChange={e => setFormData(p => ({ ...p, description: e.target.value }))}
                   placeholder="Short description…"
-                  className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
-                  style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }} />
+                  className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none transition-all duration-200"
+                  style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
+                  onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
+                  onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                />
               </div>
               <button type="submit" disabled={saving}
                 className="w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-200 hover:opacity-90 mt-2 disabled:opacity-60"

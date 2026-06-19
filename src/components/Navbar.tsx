@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navLinks: [string, string][] = [
   ['/', 'Home'],
@@ -11,7 +11,8 @@ const navLinks: [string, string][] = [
   ['/shop?genre=Manga', 'Manga'],
   ['/shop?language=Hindi', 'Hindi Books'],
   ['/shop?language=Marathi', 'Marathi Books'],
-  ['/admin', 'Admin'],
+  ['/about', 'About'],
+  ['/contact', 'Contact'],
 ];
 
 const categories = ['All', 'Fiction', 'Non-fiction', 'Mystery', 'Romance', 'Fantasy', 'Self-help', 'Manga', 'Poetry'];
@@ -23,6 +24,17 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCategory, setSearchCategory] = useState('All');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('ll_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        setUserName(u.name || u.email || null);
+      }
+    } catch {}
+  }, []);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -81,6 +93,17 @@ export default function Navbar() {
 
           {/* Right icons */}
           <div className="flex items-center gap-3 shrink-0 ml-auto">
+            {/* Account / Login */}
+            <Link
+              href={userName ? '/account' : '/login'}
+              className="relative p-1.5 hidden md:flex items-center gap-1 text-xs font-medium"
+              style={{ color: '#2D5016' }}
+              title={userName ? 'My Account' : 'Login'}
+            >
+              <span className="text-lg">👤</span>
+              <span className="hidden lg:inline">{userName ? userName.split(' ')[0] : 'Login'}</span>
+            </Link>
+
             {/* Wishlist placeholder */}
             <button className="relative p-1.5 hidden md:flex items-center" title="Wishlist" style={{ color: '#555' }}>
               <span className="text-xl">♡</span>

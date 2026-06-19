@@ -1,9 +1,29 @@
 'use client';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { books } from '@/data/books';
 import BookCard from '@/components/BookCard';
 import { useCart } from '@/context/CartContext';
+
+// ── Simple scroll animation hook ─────────────────────────────────────────────
+
+function useScrollAnimation() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-fadeInUp');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+}
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -47,14 +67,14 @@ function HScrollSection({ title, subtitle, bookList, discounts }: {
   return (
     <section className="py-12" style={{ backgroundColor: '#FAF7F2' }}>
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-end justify-between mb-6">
+        <div className="flex items-end justify-between mb-6 scroll-animate opacity-0">
           <div>
             <h2 style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 4 }}>{title}</h2>
             {subtitle && <p style={{ color: '#888', fontSize: 14 }}>{subtitle}</p>}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => scroll('l')} style={{ width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #2D5016', color: '#2D5016', backgroundColor: 'white', cursor: 'pointer', fontSize: 16 }}>‹</button>
-            <button onClick={() => scroll('r')} style={{ width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #2D5016', color: '#2D5016', backgroundColor: 'white', cursor: 'pointer', fontSize: 16 }}>›</button>
+            <button onClick={() => scroll('l')} style={{ width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #2D5016', color: '#2D5016', backgroundColor: 'white', cursor: 'pointer', fontSize: 16, transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#2D5016'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.color = '#2D5016'; }}>‹</button>
+            <button onClick={() => scroll('r')} style={{ width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #2D5016', color: '#2D5016', backgroundColor: 'white', cursor: 'pointer', fontSize: 16, transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#2D5016'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.color = '#2D5016'; }}>›</button>
           </div>
         </div>
         <div ref={ref} style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'none' }}>
@@ -121,6 +141,7 @@ const promoCards = [
 
 export default function HomePage() {
   const { addToCart } = useCart();
+  useScrollAnimation();
 
   const highlights = books.slice(0, 8);
   const bestsellers = books.slice(8, 16);
@@ -148,7 +169,7 @@ export default function HomePage() {
       <section style={{ background: 'linear-gradient(135deg, #1A3009 0%, #2D5016 60%, #3a6b1e 100%)', minHeight: 480, display: 'flex', alignItems: 'center' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', width: '100%' }}>
           {/* Left text */}
-          <div>
+          <div className="animate-fadeInLeft" style={{ opacity: 0, animationFillMode: 'forwards' }}>
             <div style={{ display: 'inline-block', backgroundColor: 'rgba(168,213,162,0.15)', color: '#A8D5A2', border: '1px solid rgba(168,213,162,0.3)', borderRadius: 20, padding: '4px 14px', fontSize: 13, marginBottom: 20 }}>
               🍃 Your Literary Sanctuary
             </div>
@@ -157,26 +178,35 @@ export default function HomePage() {
               <em style={{ color: '#A8D5A2' }}>Tells a Story</em>
             </h1>
             <p style={{ color: 'rgba(250,247,242,0.75)', fontSize: 16, lineHeight: 1.7, marginBottom: 28, maxWidth: 440 }}>
-              Discover 22+ books across English, Hindi, Marathi, Japanese & Manga. From timeless classics to contemporary voices.
+              Discover 22+ books across English, Hindi, Marathi, Japanese &amp; Manga. From timeless classics to contemporary voices.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <Link href="/shop" style={{ backgroundColor: '#8B4513', color: 'white', padding: '12px 28px', borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-block' }}>
+              <Link href="/shop" style={{ backgroundColor: '#8B4513', color: 'white', padding: '12px 28px', borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-block', transition: 'transform 0.2s ease, opacity 0.2s ease' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}
+              >
                 Discover Now
               </Link>
-              <Link href="/shop" style={{ border: '1.5px solid rgba(250,247,242,0.5)', color: '#FAF7F2', padding: '12px 28px', borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-block' }}>
+              <Link href="/shop" style={{ border: '1.5px solid rgba(250,247,242,0.5)', color: '#FAF7F2', padding: '12px 28px', borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-block', transition: 'background-color 0.2s ease' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.1)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
+              >
                 Browse All
               </Link>
             </div>
           </div>
 
           {/* Right — 3 stacked book covers */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 12, paddingTop: 16 }}>
+          <div className="animate-fadeInRight delay-200" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 12, paddingTop: 16, opacity: 0, animationFillMode: 'forwards' }}>
             {heroBooks.map((book, i) => {
               const angle = [-8, 0, 8][i];
               const scale = [0.88, 1, 0.88][i];
               const zIndex = [1, 3, 1][i];
               return (
-                <Link key={book.id} href={`/book/${book.id}`} style={{ transform: `rotate(${angle}deg) scale(${scale})`, zIndex, textDecoration: 'none', display: 'block', boxShadow: '0 12px 40px rgba(0,0,0,0.45)', borderRadius: 6, overflow: 'hidden', width: 130 }}>
+                <Link key={book.id} href={`/book/${book.id}`} style={{ transform: `rotate(${angle}deg) scale(${scale})`, zIndex, textDecoration: 'none', display: 'block', boxShadow: '0 12px 40px rgba(0,0,0,0.45)', borderRadius: 6, overflow: 'hidden', width: 130, transition: 'transform 0.3s ease, box-shadow 0.3s ease' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = `rotate(${angle}deg) scale(${scale * 1.06})`; (e.currentTarget as HTMLElement).style.boxShadow = '0 20px 56px rgba(0,0,0,0.55)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = `rotate(${angle}deg) scale(${scale})`; (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.45)'; }}
+                >
                   <BookCoverImg book={book} height={190} />
                 </Link>
               );
@@ -203,7 +233,7 @@ export default function HomePage() {
       {/* ── E. Browse by Category ─────────────────────────────────────── */}
       <section style={{ backgroundColor: '#F0EBE3', padding: '56px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div className="scroll-animate opacity-0" style={{ textAlign: 'center', marginBottom: 40 }}>
             <h2 style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 8 }}>Browse by Category</h2>
             <p style={{ color: '#888', fontSize: 14 }}>Find stories in every genre you love</p>
           </div>
@@ -213,7 +243,7 @@ export default function HomePage() {
                 key={cat.label}
                 href={cat.href}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: 'white', borderRadius: 12, padding: '24px 8px', border: '1.5px solid #E8E0D5', textDecoration: 'none', color: '#2D5016', transition: 'all 0.2s' }}
-                className="hover:shadow-md"
+                className="hover:shadow-md scroll-animate opacity-0"
               >
                 {cat.icon}
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#2D5016' }}>{cat.label}</span>
@@ -233,21 +263,32 @@ export default function HomePage() {
 
       {/* ── G. Dark promo banner ──────────────────────────────────────── */}
       <section style={{ backgroundColor: '#1A3009', padding: '64px 24px', textAlign: 'center' }}>
-        <p style={{ color: '#A8D5A2', fontSize: 13, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>Best Collection</p>
-        <h2 style={{ fontFamily: 'Georgia, serif', color: '#FAF7F2', fontSize: 36, fontWeight: 700, marginBottom: 16 }}>TOP FAVOURITE STORIES</h2>
-        <p style={{ color: 'rgba(250,247,242,0.65)', fontSize: 16, maxWidth: 500, margin: '0 auto 28px' }}>
-          Find our take on the best books of all time, curated with love.
-        </p>
-        <Link href="/shop" style={{ backgroundColor: '#8B4513', color: 'white', padding: '13px 36px', borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-block' }}>
-          Discover Now
-        </Link>
+        <div className="scroll-animate opacity-0">
+          <p style={{ color: '#A8D5A2', fontSize: 13, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>Best Collection</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', color: '#FAF7F2', fontSize: 36, fontWeight: 700, marginBottom: 16 }}>TOP FAVOURITE STORIES</h2>
+          <p style={{ color: 'rgba(250,247,242,0.65)', fontSize: 16, maxWidth: 500, margin: '0 auto 28px' }}>
+            Find our take on the best books of all time, curated with love.
+          </p>
+          <Link href="/shop" style={{ backgroundColor: '#8B4513', color: 'white', padding: '13px 36px', borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-block', transition: 'transform 0.2s ease, opacity 0.2s ease' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}
+          >
+            Discover Now
+          </Link>
+        </div>
       </section>
 
       {/* ── H. 3-column promo cards ───────────────────────────────────── */}
       <section style={{ backgroundColor: '#FAF7F2', padding: '48px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-          {promoCards.map(card => (
-            <div key={card.label} style={{ backgroundColor: card.bg, borderRadius: 12, padding: '36px 28px', color: 'white' }}>
+          {promoCards.map((card, i) => (
+            <div
+              key={card.label}
+              className={`scroll-animate opacity-0`}
+              style={{ backgroundColor: card.bg, borderRadius: 12, padding: '36px 28px', color: 'white', transition: 'transform 0.25s ease, box-shadow 0.25s ease', animationDelay: `${i * 0.1}s` }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 40px rgba(0,0,0,0.25)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+            >
               <span style={{ fontSize: 36, display: 'block', marginBottom: 12 }}>{card.emoji}</span>
               <p style={{ fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.7, marginBottom: 8 }}>{card.label}</p>
               <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 700, marginBottom: 20, lineHeight: 1.3 }}>{card.title}</h3>
@@ -262,10 +303,10 @@ export default function HomePage() {
       {/* ── I. Picks for you ──────────────────────────────────────────── */}
       <section style={{ backgroundColor: '#F0EBE3', padding: '56px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 32 }}>Picks For You</h2>
+          <h2 className="scroll-animate opacity-0" style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 32 }}>Picks For You</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
             {/* Featured big card */}
-            <div style={{ backgroundColor: 'white', borderRadius: 12, border: '1px solid #E8E0D5', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div className="scroll-animate opacity-0" style={{ backgroundColor: 'white', borderRadius: 12, border: '1px solid #E8E0D5', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ height: 280, overflow: 'hidden' }}>
                 <BookCoverImg book={featured} height={280} />
               </div>
@@ -278,7 +319,11 @@ export default function HomePage() {
                   <span style={{ fontWeight: 700, fontSize: 20, color: '#2D5016' }}>₹{featured.price}</span>
                   <button
                     onClick={() => addToCart(featured)}
-                    style={{ backgroundColor: '#2D5016', color: 'white', border: 'none', borderRadius: 8, padding: '10px 22px', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
+                    style={{ backgroundColor: '#2D5016', color: 'white', border: 'none', borderRadius: 8, padding: '10px 22px', fontWeight: 600, fontSize: 14, cursor: 'pointer', transition: 'transform 0.15s ease, opacity 0.15s ease' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+                    onMouseDown={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.96)'; }}
+                    onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
                   >
                     + Add to Cart
                   </button>
@@ -288,8 +333,15 @@ export default function HomePage() {
 
             {/* Sidebar list */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {picksForYou.map(book => (
-                <Link key={book.id} href={`/book/${book.id}`} style={{ textDecoration: 'none', display: 'flex', gap: 14, backgroundColor: 'white', borderRadius: 10, border: '1px solid #E8E0D5', padding: 14, alignItems: 'center' }}>
+              {picksForYou.map((book, i) => (
+                <Link
+                  key={book.id}
+                  href={`/book/${book.id}`}
+                  className="scroll-animate opacity-0"
+                  style={{ textDecoration: 'none', display: 'flex', gap: 14, backgroundColor: 'white', borderRadius: 10, border: '1px solid #E8E0D5', padding: 14, alignItems: 'center', transition: 'transform 0.2s ease, box-shadow 0.2s ease', animationDelay: `${i * 0.08}s` }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateX(4px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 16px rgba(45,80,22,0.1)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+                >
                   <div style={{ width: 64, height: 80, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
                     <BookCoverImg book={book} height={80} />
                   </div>
@@ -309,7 +361,7 @@ export default function HomePage() {
       {/* ── J. Featured Authors ───────────────────────────────────────── */}
       <section style={{ backgroundColor: '#FAF7F2', padding: '56px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <div className="scroll-animate opacity-0" style={{ textAlign: 'center', marginBottom: 36 }}>
             <h2 style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 8 }}>Meet Our Authors</h2>
             <p style={{ color: '#888', fontSize: 14 }}>The brilliant minds behind our collection</p>
           </div>
@@ -318,14 +370,23 @@ export default function HomePage() {
               const hue = (book.author.charCodeAt(0) * 47) % 360;
               const initial = book.author.charAt(0);
               return (
-                <div key={book.author} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, minWidth: 80 }}>
+                <div
+                  key={book.author}
+                  className="scroll-animate opacity-0"
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, minWidth: 80 }}
+                >
                   <div style={{
                     width: 72, height: 72, borderRadius: '50%',
                     background: `hsl(${hue},45%,42%)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'white', fontFamily: 'Georgia, serif', fontSize: 26, fontWeight: 700,
                     boxShadow: '0 4px 14px rgba(0,0,0,0.12)',
-                  }}>
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    cursor: 'default',
+                  }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 20px rgba(0,0,0,0.2)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 14px rgba(0,0,0,0.12)'; }}
+                  >
                     {initial}
                   </div>
                   <span style={{ fontSize: 12, color: '#444', fontWeight: 600, textAlign: 'center', maxWidth: 80, lineHeight: 1.3 }}>{book.author}</span>
@@ -339,12 +400,12 @@ export default function HomePage() {
       {/* ── K. Testimonials ───────────────────────────────────────────── */}
       <section style={{ backgroundColor: '#F0EBE3', padding: '56px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 32, textAlign: 'center' }}>What Our Readers Say</h2>
+          <h2 className="scroll-animate opacity-0" style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 32, textAlign: 'center' }}>What Our Readers Say</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 32, alignItems: 'start' }}>
             {/* Review cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
               {testimonials.map((t, i) => (
-                <div key={i} style={{ backgroundColor: 'white', borderRadius: 12, padding: 20, border: '1px solid #E8E0D5' }}>
+                <div key={i} className="scroll-animate opacity-0" style={{ backgroundColor: 'white', borderRadius: 12, padding: 20, border: '1px solid #E8E0D5', animationDelay: `${i * 0.08}s` }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                     <span style={{ fontWeight: 700, color: '#1a1a1a', fontSize: 14 }}>{t.name}</span>
                     <span style={{ color: '#aaa', fontSize: 12 }}>{t.date}</span>
@@ -359,7 +420,7 @@ export default function HomePage() {
               ))}
             </div>
             {/* Big rating circle */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2D5016', borderRadius: 16, padding: '32px 28px', color: 'white', minWidth: 160 }}>
+            <div className="scroll-animate opacity-0" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2D5016', borderRadius: 16, padding: '32px 28px', color: 'white', minWidth: 160 }}>
               <span style={{ fontFamily: 'Georgia, serif', fontSize: 48, fontWeight: 700, lineHeight: 1 }}>4.8</span>
               <span style={{ fontSize: 13, opacity: 0.75, marginTop: 4 }}>out of 5</span>
               <div style={{ margin: '12px 0 4px' }}>{'★★★★★'}</div>
@@ -377,8 +438,8 @@ export default function HomePage() {
             { icon: '🏷️', title: 'Best Prices', sub: 'Always competitive' },
             { icon: '🎁', title: 'Daily Deals', sub: 'New offers everyday' },
             { icon: '🔒', title: 'Secure Shopping', sub: '100% safe checkout' },
-          ].map(badge => (
-            <div key={badge.title} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          ].map((badge, i) => (
+            <div key={badge.title} className="scroll-animate opacity-0" style={{ display: 'flex', alignItems: 'center', gap: 14, animationDelay: `${i * 0.07}s` }}>
               <span style={{ fontSize: 28 }}>{badge.icon}</span>
               <div>
                 <p style={{ fontWeight: 700, fontSize: 14, color: '#1a1a1a', marginBottom: 2 }}>{badge.title}</p>
@@ -392,13 +453,19 @@ export default function HomePage() {
       {/* ── M. News & Events ──────────────────────────────────────────── */}
       <section style={{ backgroundColor: '#FAF7F2', padding: '56px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <div className="scroll-animate opacity-0" style={{ textAlign: 'center', marginBottom: 36 }}>
             <h2 style={{ fontFamily: 'Georgia, serif', color: '#2D5016', fontSize: 26, fontWeight: 700, marginBottom: 8 }}>From the Shelves</h2>
             <p style={{ color: '#888', fontSize: 14 }}>News, events and reading culture</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-            {articles.map(article => (
-              <div key={article.title} style={{ backgroundColor: 'white', borderRadius: 12, border: '1px solid #E8E0D5', overflow: 'hidden' }}>
+            {articles.map((article, i) => (
+              <div
+                key={article.title}
+                className="scroll-animate opacity-0"
+                style={{ backgroundColor: 'white', borderRadius: 12, border: '1px solid #E8E0D5', overflow: 'hidden', transition: 'transform 0.2s ease, box-shadow 0.2s ease', animationDelay: `${i * 0.1}s` }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+              >
                 <div style={{ backgroundColor: article.bg, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44 }}>
                   {article.emoji}
                 </div>
@@ -417,24 +484,37 @@ export default function HomePage() {
 
       {/* ── N. Newsletter ─────────────────────────────────────────────── */}
       <section style={{ backgroundColor: '#2D5016', padding: '64px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'Georgia, serif', color: '#FAF7F2', fontSize: 30, fontWeight: 700, marginBottom: 10 }}>Stay in the Know</h2>
-        <p style={{ color: 'rgba(250,247,242,0.7)', fontSize: 15, marginBottom: 28, maxWidth: 400, margin: '0 auto 28px' }}>
-          Subscribe for new arrivals, reading lists, and members-only deals.
-        </p>
-        <div style={{ display: 'flex', maxWidth: 420, margin: '0 auto 28px', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
-          <input
-            type="email"
-            placeholder="Enter your email address"
-            style={{ flex: 1, padding: '12px 16px', border: 'none', outline: 'none', fontSize: 14, backgroundColor: '#FAF7F2', color: '#1a1a1a' }}
-          />
-          <button style={{ backgroundColor: '#8B4513', color: 'white', border: 'none', padding: '12px 20px', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-            Subscribe
-          </button>
-        </div>
-        {/* Social icons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-          <a href="#" style={{ color: 'rgba(250,247,242,0.7)', textDecoration: 'none', fontSize: 22 }} title="Twitter/X">𝕏</a>
-          <a href="#" style={{ color: 'rgba(250,247,242,0.7)', textDecoration: 'none', fontSize: 22 }} title="Instagram">📷</a>
+        <div className="scroll-animate opacity-0">
+          <h2 style={{ fontFamily: 'Georgia, serif', color: '#FAF7F2', fontSize: 30, fontWeight: 700, marginBottom: 10 }}>Stay in the Know</h2>
+          <p style={{ color: 'rgba(250,247,242,0.7)', fontSize: 15, marginBottom: 28, maxWidth: 400, margin: '0 auto 28px' }}>
+            Subscribe for new arrivals, reading lists, and members-only deals.
+          </p>
+          <div style={{ display: 'flex', maxWidth: 420, margin: '0 auto 28px', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              style={{ flex: 1, padding: '12px 16px', border: 'none', outline: 'none', fontSize: 14, backgroundColor: '#FAF7F2', color: '#1a1a1a', transition: 'box-shadow 0.2s ease' }}
+              onFocus={e => { e.currentTarget.style.boxShadow = 'inset 0 0 0 2px #A8D5A2'; }}
+              onBlur={e => { e.currentTarget.style.boxShadow = 'none'; }}
+            />
+            <button style={{ backgroundColor: '#8B4513', color: 'white', border: 'none', padding: '12px 20px', fontWeight: 600, fontSize: 14, cursor: 'pointer', transition: 'opacity 0.2s ease' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+            >
+              Subscribe
+            </button>
+          </div>
+          {/* Social icons */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+            <a href="#" style={{ color: 'rgba(250,247,242,0.7)', textDecoration: 'none', fontSize: 22, transition: 'color 0.2s ease' }} title="Twitter/X"
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#FAF7F2'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(250,247,242,0.7)'; }}
+            >𝕏</a>
+            <a href="#" style={{ color: 'rgba(250,247,242,0.7)', textDecoration: 'none', fontSize: 22, transition: 'color 0.2s ease' }} title="Instagram"
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = '#FAF7F2'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(250,247,242,0.7)'; }}
+            >📷</a>
+          </div>
         </div>
       </section>
 

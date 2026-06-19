@@ -12,13 +12,21 @@ interface BookCardProps {
 export default function BookCard({ book, discount }: BookCardProps) {
   const { addToCart } = useCart();
   const [imgError, setImgError] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [cartBounce, setCartBounce] = useState(false);
 
   const coverUrl = book.isbn && !imgError
     ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
     : null;
 
   const stars = Math.round(book.rating);
+
+  function handleAddToCart() {
+    addToCart(book);
+    setCartBounce(true);
+    setTimeout(() => setCartBounce(false), 400);
+  }
 
   return (
     <div
@@ -50,12 +58,31 @@ export default function BookCard({ book, discount }: BookCardProps) {
           style={{ height: 220, backgroundColor: book.coverColor }}
         >
           {coverUrl ? (
-            <img
-              src={coverUrl}
-              alt={book.title}
-              onError={() => setImgError(true)}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
+            <>
+              {/* Skeleton shown until image loads */}
+              {!imgLoaded && (
+                <div
+                  className="absolute inset-0 skeleton"
+                  style={{ zIndex: 1 }}
+                />
+              )}
+              <img
+                src={coverUrl}
+                alt={book.title}
+                onError={() => setImgError(true)}
+                onLoad={() => setImgLoaded(true)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                  opacity: imgLoaded ? 1 : 0,
+                  transition: 'opacity 0.4s ease',
+                  position: 'relative',
+                  zIndex: 2,
+                }}
+              />
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full px-4" style={{ backgroundColor: book.coverColor }}>
               <span className="text-5xl mb-2">📚</span>
@@ -67,7 +94,7 @@ export default function BookCard({ book, discount }: BookCardProps) {
 
           {/* Hover quick actions */}
           {hovered && (
-            <div className="absolute inset-0 flex items-center justify-center gap-2" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
+            <div className="absolute inset-0 flex items-center justify-center gap-2" style={{ backgroundColor: 'rgba(0,0,0,0.35)', zIndex: 3, animation: 'fadeIn 0.18s ease forwards' }}>
               <button
                 className="w-9 h-9 rounded-full flex items-center justify-center text-base transition-all"
                 style={{ backgroundColor: 'white', color: '#e53e3e' }}
@@ -106,26 +133,37 @@ export default function BookCard({ book, discount }: BookCardProps) {
             {book.title}
           </h3>
         </Link>
+
+        {/* Price — subtle color transition on hover */}
         <p className="text-xs mb-2" style={{ color: '#8B4513' }}>{book.author}</p>
 
         <div className="flex items-center justify-between">
-          <span className="font-bold text-base" style={{ color: '#2D5016' }}>₹{book.price}</span>
+          <span
+            className="font-bold text-base transition-colors duration-200"
+            style={{ color: hovered ? '#1A3009' : '#2D5016' }}
+          >
+            ₹{book.price}
+          </span>
           {discount && (
             <span className="text-xs text-gray-400 line-through">₹{Math.round(book.price / (1 - discount / 100))}</span>
           )}
         </div>
 
-        {/* Add to cart — appears on hover */}
+        {/* Add to cart — scale-up bounce on click */}
         <button
-          onClick={() => addToCart(book)}
+          onClick={handleAddToCart}
           className="w-full mt-2 py-1.5 text-xs font-semibold rounded transition-all duration-200"
           style={{
             backgroundColor: hovered ? '#2D5016' : '#F0EBE3',
             color: hovered ? 'white' : '#2D5016',
             border: '1.5px solid #2D5016',
+            transform: cartBounce ? 'scale(1.07)' : 'scale(1)',
+            transition: cartBounce
+              ? 'transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, color 0.2s'
+              : 'transform 0.2s ease, background-color 0.2s, color 0.2s',
           }}
         >
-          + Add to Cart
+          {cartBounce ? '✓ Added!' : '+ Add to Cart'}
         </button>
       </div>
     </div>

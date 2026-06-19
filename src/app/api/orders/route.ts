@@ -5,7 +5,8 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get('status');
-  const limit = parseInt(searchParams.get('limit') || '20');
+  const email = searchParams.get('email');
+  const limit = parseInt(searchParams.get('limit') || '50');
   const offset = parseInt(searchParams.get('offset') || '0');
 
   let query = supabaseAdmin
@@ -15,6 +16,7 @@ export async function GET(req: NextRequest) {
     .range(offset, offset + limit - 1);
 
   if (status) query = query.eq('status', status);
+  if (email) query = query.eq('customer_email', email);
 
   const { data, error, count } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
