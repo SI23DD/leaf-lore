@@ -1,5 +1,7 @@
 'use client';
 import { useCart } from '@frontend/context/CartContext';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -111,7 +113,7 @@ export default function CartPage() {
     if (!checkoutForm.name || !checkoutForm.email) { setError('Please fill in your name and email.'); return; }
     setPlacing(true); setError('');
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

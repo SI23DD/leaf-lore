@@ -1,5 +1,7 @@
 'use client';
 import { useParams } from 'next/navigation';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import Link from 'next/link';
 import { useCart } from '@frontend/context/CartContext';
 import BookCard from '@frontend/components/BookCard';
@@ -49,12 +51,12 @@ export default function BookDetailPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`/api/books/${id}`)
+    fetch(`${API_URL}/api/books/${id}`)
       .then(r => { if (r.status === 404) { setNotFound(true); return null; } return r.json(); })
       .then(data => {
         if (!data) return;
         setBook(data.book);
-        fetch(`/api/books?genre=${encodeURIComponent(data.book.genre)}&limit=5`)
+        fetch(`${API_URL}/api/books?genre=${encodeURIComponent(data.book.genre)}&limit=5`)
           .then(r => r.json())
           .then(d => setRelated((d.books || []).filter((b: Book) => b.id !== data.book.id).slice(0, 4)));
       })

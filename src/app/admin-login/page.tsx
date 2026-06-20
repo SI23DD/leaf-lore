@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLoginPage() {
@@ -12,7 +14,7 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const res = await fetch('/api/admin/auth', {
+    const res = await fetch(`${API_URL}/api/admin/auth`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key }),

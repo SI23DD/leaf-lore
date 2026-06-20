@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import Link from 'next/link';
 
 interface Book {
@@ -47,7 +49,7 @@ export default function AdminBooksPage() {
         offset: String((page - 1) * ITEMS_PER_PAGE),
         ...(search ? { search } : {}),
       });
-      const res = await fetch(`/api/books?${params}`);
+      const res = await fetch(`${API_URL}/api/books?${params}`);
       const data = await res.json();
       setBooks(data.books || []);
       setTotal(data.total || 0);
@@ -63,7 +65,7 @@ export default function AdminBooksPage() {
 
   async function handleDelete(id: string, title: string) {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    const res = await fetch(`/api/books/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/api/books/${id}`, { method: 'DELETE' });
     if (res.ok) { showToast('Book deleted'); fetchBooks(); }
     else showToast('Failed to delete book');
   }
@@ -73,7 +75,7 @@ export default function AdminBooksPage() {
     if (!editingBook) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/books/${editingBook.id}`, {
+      const res = await fetch(`${API_URL}/api/books/${editingBook.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

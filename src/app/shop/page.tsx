@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useSearchParams, useRouter } from 'next/navigation';
 import BookCard from '@frontend/components/BookCard';
 
@@ -310,7 +312,7 @@ function ShopInner() {
       else if (sort === 'rating') { params.set('sort', 'rating'); params.set('order', 'desc'); }
       else if (sort === 'title') { params.set('sort', 'title'); params.set('order', 'asc'); }
 
-      const res = await fetch(`/api/books?${params}`);
+      const res = await fetch(`${API_URL}/api/books?${params}`);
       const data = await res.json();
 
       let result: Book[] = data.books || [];

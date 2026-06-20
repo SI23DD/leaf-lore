@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 // ── Line-art SVG icons — the aesthetic risk: thin-stroke catalog icons ────
 // Each is a 48×48 viewport, stroke only, no fills. Like bookstore section signage.
 const CategoryIcons: Record<string, React.FC> = {
@@ -173,7 +175,7 @@ export default function CategoriesPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/books?limit=500')
+    fetch(`${API_URL}/api/books?limit=500`)
       .then(r => r.json())
       .then(data => {
         const books: Array<{ genre: string; language: string }> = data.books || [];

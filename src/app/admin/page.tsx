@@ -1,5 +1,7 @@
 'use client';
 import Link from 'next/link';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useState, useEffect, useCallback } from 'react';
 
 interface Stats {
@@ -52,8 +54,8 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const [statsRes, ordersRes] = await Promise.all([
-        fetch('/api/admin/stats').then(r => r.json()),
-        fetch('/api/orders?limit=5').then(r => r.json()),
+        fetch(`${API_URL}/api/admin/stats`).then(r => r.json()),
+        fetch(`${API_URL}/api/orders?limit=5`).then(r => r.json()),
       ]);
       setStats(statsRes);
       setOrders(ordersRes.orders || []);
@@ -70,7 +72,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await fetch('/api/books', {
+      const res = await fetch(`${API_URL}/api/books`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, price: parseFloat(formData.price), stock: parseInt(formData.stock) }),
@@ -86,7 +88,7 @@ export default function AdminDashboard() {
   }
 
   async function handleStatusChange(orderId: string, status: string) {
-    const res = await fetch(`/api/orders/${orderId}`, {
+    const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),

@@ -1,22 +1,21 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Lato } from 'next/font/google';
+import { Poppins, Nunito } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@frontend/context/CartContext';
 import { AuthProvider } from '@frontend/context/AuthContext';
 import Navbar from '@frontend/components/Navbar';
 import Footer from '@frontend/components/Footer';
 
-const playfair = Playfair_Display({
-  variable: '--font-playfair',
+const poppins = Poppins({
+  variable: '--font-poppins',
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  style: ['normal', 'italic'],
+  weight: ['400', '500', '600', '700'],
 });
 
-const lato = Lato({
-  variable: '--font-lato',
+const nunito = Nunito({
+  variable: '--font-nunito',
   subsets: ['latin'],
-  weight: ['300', '400', '700'],
+  weight: ['400', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -26,8 +25,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${lato.variable}`}>
-      <body style={{ backgroundColor: '#FAF7F2', fontFamily: 'var(--font-lato), sans-serif', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <html lang="en" className={`${poppins.variable} ${nunito.variable}`}>
+      <body style={{ backgroundColor: '#ffffff', fontFamily: 'var(--font-poppins), system-ui, sans-serif', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <AuthProvider>
           <CartProvider>
             <Navbar />

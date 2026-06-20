@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
 function getPasswordStrength(pwd: string): { label: string; color: string; width: string } {
   if (pwd.length === 0) return { label: '', color: 'transparent', width: '0%' };
   if (pwd.length < 6) return { label: 'Too short', color: '#C82333', width: '20%' };
@@ -45,7 +47,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),

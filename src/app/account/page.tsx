@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@frontend/context/AuthContext';
@@ -67,7 +69,7 @@ export default function AccountDashboard() {
     if (!user) return;
     (async () => {
       try {
-        const res = await fetch(`/api/orders?email=${encodeURIComponent(user.email)}`);
+        const res = await fetch(`${API_URL}/api/orders?email=${encodeURIComponent(user.email)}`);
         const data = await res.json();
         const all: Order[] = data.orders || [];
         setOrders(all);

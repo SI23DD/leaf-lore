@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@frontend/context/AuthContext';
@@ -75,7 +77,7 @@ export default function OrderDetailPage() {
     if (!orderId || !user) return;
     (async () => {
       try {
-        const res = await fetch(`/api/orders/${orderId}`);
+        const res = await fetch(`${API_URL}/api/orders/${orderId}`);
         if (!res.ok) { setError('Order not found.'); return; }
         const data = await res.json();
         setOrder(data.order);

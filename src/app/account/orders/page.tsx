@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@frontend/context/AuthContext';
@@ -43,7 +45,7 @@ export default function OrdersPage() {
     if (!user) return;
     (async () => {
       try {
-        const res = await fetch('/api/orders');
+        const res = await fetch(`${API_URL}/api/orders`);
         const data = await res.json();
         const all: Order[] = data.orders || [];
         setOrders(all.filter((o) => o.customer_email === user.email));
