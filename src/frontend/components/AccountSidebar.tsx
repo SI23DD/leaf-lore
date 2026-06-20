@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@frontend/context/AuthContext';
 
 const NAV_LINKS = [
   { href: '/account', label: 'My Orders', icon: '📦' },

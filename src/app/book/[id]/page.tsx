@@ -1,8 +1,8 @@
 'use client';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
-import BookCard from '@/components/BookCard';
+import { useCart } from '@frontend/context/CartContext';
+import BookCard from '@frontend/components/BookCard';
 import { useState, useEffect, useCallback } from 'react';
 
 interface Book {
@@ -12,7 +12,7 @@ interface Book {
 }
 
 const languageBadgeColors: Record<string, string> = {
-  'English': '#2D5016', 'Japanese': '#C41E3A', 'Hindi': '#8B4513',
+  'English': '#C82333', 'Japanese': '#C41E3A', 'Hindi': '#666666',
   'Marathi': '#4A235A', 'Manga/Anime': '#1F618D',
 };
 
@@ -96,7 +96,7 @@ export default function BookDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FAF7F2' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#ffffff' }}>
         <p className="text-gray-400">Loading…</p>
       </div>
     );
@@ -104,11 +104,11 @@ export default function BookDetailPage() {
 
   if (notFound || !book) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FAF7F2' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#ffffff' }}>
         <div className="text-center">
           <div className="text-6xl mb-4">📚</div>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#2D5016', fontFamily: 'var(--font-playfair), serif' }}>Book not found</h2>
-          <Link href="/shop" className="text-sm underline" style={{ color: '#8B4513' }}>Back to Shop</Link>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#C82333', fontFamily: 'var(--font-playfair), serif' }}>Book not found</h2>
+          <Link href="/shop" className="text-sm underline" style={{ color: '#666666' }}>Back to Shop</Link>
         </div>
       </div>
     );
@@ -129,12 +129,12 @@ export default function BookDetailPage() {
   const thumbLabels = ['Front cover', 'Right spine', 'Left angle', 'Top view'];
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2' }} className="min-h-screen">
+    <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen">
       <style>{`
         :root {
-          --green: #2D5016;
-          --brown: #8B4513;
-          --cream: #FAF7F2;
+          --green: #C82333;
+          --brown: #666666;
+          --cream: #ffffff;
         }
 
         /* ── Breadcrumb ── */
@@ -143,8 +143,8 @@ export default function BookDetailPage() {
           font-size: 0.8rem; color: #999; margin-bottom: 32px;
           animation: fadeIn 0.5s ease forwards;
         }
-        .breadcrumb a { color: #8B4513; text-decoration: none; transition: color 0.15s; }
-        .breadcrumb a:hover { color: #2D5016; text-decoration: underline; }
+        .breadcrumb a { color: #666666; text-decoration: none; transition: color 0.15s; }
+        .breadcrumb a:hover { color: #C82333; text-decoration: underline; }
         .breadcrumb-sep { color: #CCC; }
         .breadcrumb-current { color: #555; font-weight: 500; }
 
@@ -176,7 +176,7 @@ export default function BookDetailPage() {
           box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         }
         .gallery-thumb:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.18); }
-        .gallery-thumb.active { border-color: #2D5016; }
+        .gallery-thumb.active { border-color: #C82333; }
         .gallery-thumb-label {
           position: absolute; bottom: 3px; left: 0; right: 0;
           text-align: center; font-size: 0.55rem; color: rgba(255,255,255,0.7);
@@ -195,7 +195,7 @@ export default function BookDetailPage() {
           transition: border-color 0.15s, background 0.15s; font-family: inherit;
           color: #1a1a1a;
         }
-        .qty-btn:hover:not(:disabled) { border-color: #2D5016; background: rgba(45,80,22,0.05); }
+        .qty-btn:hover:not(:disabled) { border-color: #C82333; background: rgba(200,35,51,0.05); }
         .qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
         .qty-val { width: 32px; text-align: center; font-weight: 700; font-size: 1rem; color: #1a1a1a; }
 
@@ -203,19 +203,19 @@ export default function BookDetailPage() {
         .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
         .btn-cart {
           flex: 1; min-width: 140px; padding: 13px 20px;
-          background: #2D5016; color: #fff;
+          background: #C82333; color: #fff;
           border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600;
           cursor: pointer; transition: background 0.2s, transform 0.15s; font-family: inherit;
         }
-        .btn-cart:hover:not(:disabled) { background: #3d6b1e; transform: translateY(-1px); }
+        .btn-cart:hover:not(:disabled) { background: #A71D2A; transform: translateY(-1px); }
         .btn-cart:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-buy {
           flex: 1; min-width: 120px; padding: 13px 20px;
-          background: #8B4513; color: #fff;
+          background: #666666; color: #fff;
           border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600;
           cursor: pointer; transition: background 0.2s, transform 0.15s; font-family: inherit;
         }
-        .btn-buy:hover:not(:disabled) { background: #a0501a; transform: translateY(-1px); }
+        .btn-buy:hover:not(:disabled) { background: #A71D2A; transform: translateY(-1px); }
         .btn-buy:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-wish {
           width: 46px; height: 46px; border-radius: 8px;
@@ -233,8 +233,8 @@ export default function BookDetailPage() {
         }
         .trust-badge {
           display: flex; align-items: center; gap: 6px;
-          background: rgba(45,80,22,0.06); border-radius: 6px;
-          padding: 6px 10px; font-size: 0.78rem; font-weight: 600; color: #2D5016;
+          background: rgba(200,35,51,0.06); border-radius: 6px;
+          padding: 6px 10px; font-size: 0.78rem; font-weight: 600; color: #C82333;
         }
 
         /* ── Share ── */
@@ -245,11 +245,11 @@ export default function BookDetailPage() {
           border: 1.5px solid #DDD; background: #fff; cursor: pointer; transition: all 0.15s;
           color: #444; font-family: inherit;
         }
-        .share-btn:hover { border-color: #2D5016; color: #2D5016; }
+        .share-btn:hover { border-color: #C82333; color: #C82333; }
         .share-btn.wa { border-color: #25D366; color: #25D366; }
         .share-btn.wa:hover { background: #25D366; color: #fff; }
         .share-btn.tw:hover { border-color: #1DA1F2; color: #1DA1F2; }
-        .share-btn.copied { border-color: #2D5016; color: #2D5016; background: rgba(45,80,22,0.05); }
+        .share-btn.copied { border-color: #C82333; color: #C82333; background: rgba(200,35,51,0.05); }
 
         /* ── Tabs ── */
         .tabs-section { margin-top: 56px; animation: fadeInUp 0.55s 0.25s ease both; }
@@ -260,13 +260,13 @@ export default function BookDetailPage() {
           cursor: pointer; transition: color 0.2s, border-color 0.2s; font-family: inherit;
           white-space: nowrap;
         }
-        .tab-btn.active { color: #2D5016; border-bottom-color: #2D5016; }
+        .tab-btn.active { color: #C82333; border-bottom-color: #C82333; }
         .tab-btn:hover:not(.active) { color: #555; }
         .tab-panel { animation: fadeIn 0.3s ease forwards; }
         .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
         .detail-item {
           background: #fff; border-radius: 10px; padding: 14px 16px;
-          box-shadow: 0 1px 6px rgba(45,80,22,0.06);
+          box-shadow: 0 1px 6px rgba(200,35,51,0.06);
         }
         .detail-key { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #AAA; margin-bottom: 4px; }
         .detail-val { font-size: 0.95rem; font-weight: 600; color: #1a1a1a; }
@@ -275,7 +275,7 @@ export default function BookDetailPage() {
         .review-list { display: flex; flex-direction: column; gap: 16px; }
         .review-card {
           background: #fff; border-radius: 12px; padding: 20px 22px;
-          box-shadow: 0 2px 10px rgba(45,80,22,0.06);
+          box-shadow: 0 2px 10px rgba(200,35,51,0.06);
         }
         .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
         .review-name { font-weight: 700; font-size: 0.9rem; color: #1a1a1a; }
@@ -350,10 +350,10 @@ export default function BookDetailPage() {
           <div className="info-col">
             {/* Badges */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: 999, color: '#fff', fontWeight: 600, backgroundColor: languageBadgeColors[book.language] || '#2D5016' }}>
+              <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: 999, color: '#fff', fontWeight: 600, backgroundColor: languageBadgeColors[book.language] || '#C82333' }}>
                 {book.language}
               </span>
-              <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: 999, backgroundColor: '#F0EBE3', color: '#8B4513', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: 999, backgroundColor: '#F0EBE3', color: '#666666', fontWeight: 600 }}>
                 {book.genre}
               </span>
             </div>
@@ -361,7 +361,7 @@ export default function BookDetailPage() {
             <h1 style={{ fontFamily: 'var(--font-playfair, Georgia, serif)', color: '#1a1a1a', fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: 10 }}>
               {book.title}
             </h1>
-            <p style={{ fontSize: '1.05rem', color: '#8B4513', marginBottom: 14, fontWeight: 500 }}>{book.author}</p>
+            <p style={{ fontSize: '1.05rem', color: '#666666', marginBottom: 14, fontWeight: 500 }}>{book.author}</p>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
               <StarRow rating={Math.round(book.rating)} />
@@ -370,16 +370,16 @@ export default function BookDetailPage() {
 
             {/* Price + stock */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginBottom: 20, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '2.2rem', fontWeight: 700, color: '#2D5016', fontFamily: 'var(--font-playfair, Georgia, serif)' }}>
+              <span style={{ fontSize: '2.2rem', fontWeight: 700, color: '#C82333', fontFamily: 'var(--font-playfair, Georgia, serif)' }}>
                 ₹{book.price}
               </span>
-              <span style={{ fontSize: '0.85rem', color: book.stock > 0 ? '#5A8A3A' : '#C0392B', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.85rem', color: book.stock > 0 ? '#C82333' : '#C0392B', fontWeight: 600 }}>
                 {book.stock > 0 ? `✓ In stock — ${book.stock} ${book.stock === 1 ? 'copy' : 'copies'} left` : '✕ Out of stock'}
               </span>
             </div>
 
             {cartItem && (
-              <p style={{ fontSize: '0.83rem', color: '#7A9E7E', marginBottom: 14, fontWeight: 500 }}>
+              <p style={{ fontSize: '0.83rem', color: '#888888', marginBottom: 14, fontWeight: 500 }}>
                 {cartItem.quantity} already in your cart
               </p>
             )}
@@ -502,7 +502,7 @@ export default function BookDetailPage() {
         {/* ── You Might Also Like ── */}
         {related.length > 0 && (
           <div className="related-section">
-            <h2 style={{ fontFamily: 'var(--font-playfair, Georgia, serif)', color: '#2D5016', fontSize: '1.5rem', fontWeight: 700, marginBottom: 24 }}>
+            <h2 style={{ fontFamily: 'var(--font-playfair, Georgia, serif)', color: '#C82333', fontSize: '1.5rem', fontWeight: 700, marginBottom: 24 }}>
               You Might Also Like
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20 }}>

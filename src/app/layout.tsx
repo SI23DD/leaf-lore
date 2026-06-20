@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Lato } from 'next/font/google';
 import './globals.css';
-import { CartProvider } from '@/context/CartContext';
-import { AuthProvider } from '@/context/AuthContext';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import { CartProvider } from '@frontend/context/CartContext';
+import { AuthProvider } from '@frontend/context/AuthContext';
+import Navbar from '@frontend/components/Navbar';
+import Footer from '@frontend/components/Footer';
 
 const playfair = Playfair_Display({
   variable: '--font-playfair',

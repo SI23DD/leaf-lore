@@ -1,10 +1,18 @@
 'use client';
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import BookCard from '@/components/BookCard';
+import BookCard from '@frontend/components/BookCard';
 
 const languages = ['English', 'Japanese', 'Hindi', 'Marathi', 'Manga/Anime'];
 const genres = ['Fiction', 'Non-fiction', 'Mystery', 'Romance', 'Fantasy', 'Self-help', "Children's", 'Manga', 'Poetry', 'History'];
+
+const GENRE_COUNTS: Record<string, number> = {
+  'Fiction': 5, 'Non-fiction': 1, 'Mystery': 2, 'Romance': 2,
+  'Fantasy': 1, 'Self-help': 2, "Children's": 1, 'Manga': 4, 'Poetry': 1, 'History': 1,
+};
+const LANG_COUNTS: Record<string, number> = {
+  'English': 8, 'Japanese': 3, 'Hindi': 4, 'Marathi': 4, 'Manga/Anime': 4,
+};
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'rating' | 'title';
 type ViewMode = 'grid' | 'list';
@@ -17,223 +25,120 @@ interface Book {
 
 const PAGE_SIZE = 12;
 
-// ── Skeleton card ──────────────────────────────────────────────────────────
+// ── Skeleton card ─────────────────────────────────────────────────────────
 function SkeletonCard({ view }: { view: ViewMode }) {
   if (view === 'list') {
     return (
-      <div
-        style={{
-          display: 'flex',
-          gap: 20,
-          borderRadius: 16,
-          overflow: 'hidden',
-          backgroundColor: '#fff',
-          border: '1px solid #E8E0D5',
-          padding: 16,
-          alignItems: 'flex-start',
-        }}
-      >
-        <div className="skeleton" style={{ width: 100, height: 140, borderRadius: 10, flexShrink: 0 }} />
+      <div style={{ display: 'flex', gap: 16, background: '#fff', border: '1px solid #e8e8e8', borderRadius: 6, padding: 16, alignItems: 'flex-start' }}>
+        <div className="skeleton" style={{ width: 90, height: 130, borderRadius: 4, flexShrink: 0 }} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div className="skeleton" style={{ height: 16, width: '60%', borderRadius: 6 }} />
-          <div className="skeleton" style={{ height: 12, width: '35%', borderRadius: 6 }} />
-          <div className="skeleton" style={{ height: 12, width: '80%', borderRadius: 6 }} />
-          <div className="skeleton" style={{ height: 12, width: '70%', borderRadius: 6 }} />
-          <div className="skeleton" style={{ height: 32, width: 100, borderRadius: 8, marginTop: 8 }} />
+          <div className="skeleton" style={{ height: 14, width: '55%', borderRadius: 4 }} />
+          <div className="skeleton" style={{ height: 11, width: '30%', borderRadius: 4 }} />
+          <div className="skeleton" style={{ height: 11, width: '75%', borderRadius: 4 }} />
+          <div className="skeleton" style={{ height: 32, width: 110, borderRadius: 4, marginTop: 8 }} />
         </div>
       </div>
     );
   }
   return (
-    <div
-      style={{ borderRadius: 16, overflow: 'hidden', backgroundColor: '#fff', border: '1px solid #E8E0D5' }}
-    >
-      <div className="skeleton" style={{ height: 220, width: '100%' }} />
-      <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div className="skeleton" style={{ height: 12, width: '90%', borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 10, width: '55%', borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 28, width: '100%', borderRadius: 8, marginTop: 4 }} />
+    <div style={{ borderRadius: 6, overflow: 'hidden', background: '#fff', border: '1px solid #e8e8e8' }}>
+      <div className="skeleton" style={{ height: 260, width: '100%' }} />
+      <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 7 }}>
+        <div className="skeleton" style={{ height: 12, width: '85%', borderRadius: 4 }} />
+        <div className="skeleton" style={{ height: 10, width: '50%', borderRadius: 4 }} />
+        <div className="skeleton" style={{ height: 28, width: '100%', borderRadius: 4, marginTop: 6 }} />
       </div>
     </div>
   );
 }
 
-// ── List-view book row ─────────────────────────────────────────────────────
-function BookListRow({ book, index }: { book: Book; index: number }) {
+// ── List-view book row ────────────────────────────────────────────────────
+function BookListRow({ book }: { book: Book }) {
   const [hovered, setHovered] = useState(false);
   const stars = Math.round(book.rating);
-  const delayClass = `delay-${Math.min((index % 6 + 1) * 100, 600) as 100 | 200 | 300 | 400 | 500 | 600}`;
 
   return (
-    <div
-      className={`animate-fadeInUp ${delayClass}`}
+    <a
+      href={`/book/${book.id}`}
+      style={{ textDecoration: 'none', display: 'block' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'flex',
-        gap: 20,
-        borderRadius: 16,
-        overflow: 'hidden',
-        backgroundColor: '#fff',
-        border: hovered ? '1.5px solid #2D5016' : '1px solid #E8E0D5',
-        boxShadow: hovered ? '0 8px 28px rgba(45,80,22,0.12)' : '0 2px 8px rgba(0,0,0,0.04)',
-        transition: 'all 0.22s ease',
-        transform: hovered ? 'translateY(-3px)' : 'none',
-        cursor: 'pointer',
-        opacity: 0,
-        animationFillMode: 'both',
-      }}
     >
-      {/* Colour swatch / cover */}
-      <a href={`/book/${book.id}`} style={{ flexShrink: 0 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 16,
+          background: '#fff',
+          border: `1px solid ${hovered ? '#C82333' : '#e8e8e8'}`,
+          borderRadius: 6,
+          overflow: 'hidden',
+          transition: 'border-color 0.18s ease, box-shadow 0.18s ease',
+          boxShadow: hovered ? '0 4px 16px rgba(200,35,51,0.1)' : '0 1px 3px rgba(0,0,0,0.05)',
+        }}
+      >
         <div
           style={{
-            width: 100,
-            minHeight: 140,
-            backgroundColor: book.cover_color,
+            width: 90,
+            minHeight: 130,
+            backgroundColor: book.cover_color || '#e0e0e0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 36,
+            fontSize: 28,
+            flexShrink: 0,
           }}
         >
           📚
         </div>
-      </a>
-
-      {/* Details */}
-      <div style={{ flex: 1, padding: '16px 16px 16px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-          <div>
-            <a href={`/book/${book.id}`} style={{ textDecoration: 'none' }}>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-playfair), serif',
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: '#1a1a1a',
-                  lineHeight: 1.3,
-                  marginBottom: 2,
-                }}
-              >
+        <div style={{ flex: 1, padding: '14px 14px 14px 0', display: 'flex', flexDirection: 'column', gap: 5 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: hovered ? '#C82333' : '#111', lineHeight: 1.3, marginBottom: 2, transition: 'color 0.15s ease' }}>
                 {book.title}
               </h3>
-            </a>
-            <p style={{ fontSize: 13, color: '#8B4513', marginBottom: 6 }}>{book.author}</p>
+              <p style={{ fontSize: 12, color: '#666', margin: 0 }}>{book.author}</p>
+            </div>
+            <span style={{ fontSize: 17, fontWeight: 700, color: '#C82333', flexShrink: 0 }}>₹{book.price}</span>
           </div>
-          <div style={{ flexShrink: 0 }}>
-            <span style={{ fontSize: 20, fontWeight: 700, color: '#2D5016' }}>₹{book.price}</span>
+          <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span key={i} style={{ color: i < stars ? '#FFC107' : '#ddd', fontSize: 12 }}>★</span>
+            ))}
+            <span style={{ fontSize: 11, color: '#999', marginLeft: 4 }}>{book.rating}</span>
           </div>
-        </div>
-
-        {/* Stars */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 4 }}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} style={{ color: i < stars ? '#F6AD55' : '#D1D5DB', fontSize: 13 }}>★</span>
-          ))}
-          <span style={{ fontSize: 12, color: '#999', marginLeft: 4 }}>({book.rating})</span>
-        </div>
-
-        {/* Description — richer in list view */}
-        {book.description && (
-          <p
-            style={{
-              fontSize: 13,
-              color: '#555',
-              lineHeight: 1.55,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              flex: 1,
-            }}
-          >
-            {book.description}
-          </p>
-        )}
-
-        {/* Badges + CTA */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-          <span
-            style={{
-              fontSize: 11,
-              padding: '3px 10px',
-              borderRadius: 20,
-              backgroundColor: '#EFF6E8',
-              color: '#2D5016',
-              fontWeight: 600,
-            }}
-          >
-            {book.genre}
-          </span>
-          <span
-            style={{
-              fontSize: 11,
-              padding: '3px 10px',
-              borderRadius: 20,
-              backgroundColor: '#FEF9EE',
-              color: '#8B4513',
-              fontWeight: 600,
-            }}
-          >
-            {book.language}
-          </span>
-          <button
-            style={{
-              marginLeft: 'auto',
-              padding: '7px 18px',
-              borderRadius: 10,
-              border: '1.5px solid #2D5016',
-              backgroundColor: hovered ? '#2D5016' : 'transparent',
-              color: hovered ? '#FAF7F2' : '#2D5016',
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            + Add to Cart
-          </button>
+          {book.description && (
+            <p style={{ fontSize: 12, color: '#666', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0 }}>
+              {book.description}
+            </p>
+          )}
+          <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 2, background: '#fff3f4', color: '#C82333', border: '1px solid #f5c6cb', fontWeight: 600 }}>
+              {book.genre}
+            </span>
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 2, background: '#f8f8f8', color: '#555', border: '1px solid #e8e8e8', fontWeight: 600 }}>
+              {book.language}
+            </span>
+            {book.stock === 0 && (
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 2, background: '#333', color: '#fff', fontWeight: 600 }}>
+                Sold Out
+              </span>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
-// ── Active filter chip ─────────────────────────────────────────────────────
+// ── Filter chip ───────────────────────────────────────────────────────────
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '5px 12px',
-        borderRadius: 20,
-        backgroundColor: '#EFF6E8',
-        border: '1px solid #C5DBA8',
-        fontSize: 12,
-        color: '#2D5016',
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-    >
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 3, background: '#fff3f4', border: '1px solid #f5c6cb', fontSize: 12, color: '#C82333', fontWeight: 600 }}>
       {label}
       <button
         onClick={onRemove}
         aria-label={`Remove ${label} filter`}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: '#2D5016',
-          lineHeight: 1,
-          padding: 0,
-          fontSize: 14,
-          opacity: 0.6,
-          display: 'flex',
-          alignItems: 'center',
-        }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#C82333', lineHeight: 1, padding: 0, fontSize: 14, opacity: 0.7, display: 'flex', alignItems: 'center' }}
       >
         ×
       </button>
@@ -241,140 +146,118 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
   );
 }
 
-// ── Sidebar ────────────────────────────────────────────────────────────────
-function Sidebar({
-  selectedLanguages, setSelectedLanguages,
-  selectedGenres, setSelectedGenres,
-  priceRange, setPriceRange,
-  minRating, setMinRating,
-  setSearch,
-}: {
-  selectedLanguages: string[]; setSelectedLanguages: (v: string[]) => void;
-  selectedGenres: string[]; setSelectedGenres: (v: string[]) => void;
-  priceRange: string; setPriceRange: (v: string) => void;
-  minRating: number; setMinRating: (v: number) => void;
-  setSearch: (v: string) => void;
-}) {
-  const toggle = (arr: string[], setArr: (v: string[]) => void, val: string) =>
-    setArr(arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val]);
-
-  const sectionHead: React.CSSProperties = {
-    fontWeight: 600,
-    fontSize: 11,
-    textTransform: 'uppercase',
-    letterSpacing: '0.14em',
-    color: '#2D5016',
-    marginBottom: 10,
-    display: 'block',
-  };
-
+// ── Accordion section ─────────────────────────────────────────────────────
+function AccordionSection({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {/* Languages */}
-      <div>
-        <span style={sectionHead}>Language</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {languages.map(lang => (
-            <label key={lang} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={selectedLanguages.includes(lang)}
-                onChange={() => toggle(selectedLanguages, setSelectedLanguages, lang)}
-                style={{ accentColor: '#2D5016' }}
-              />
-              <span style={{ fontSize: 13, color: '#444' }}>{lang}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Genres */}
-      <div>
-        <span style={sectionHead}>Genre</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {genres.map(genre => (
-            <label key={genre} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={selectedGenres.includes(genre)}
-                onChange={() => toggle(selectedGenres, setSelectedGenres, genre)}
-                style={{ accentColor: '#2D5016' }}
-              />
-              <span style={{ fontSize: 13, color: '#444' }}>{genre}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Price */}
-      <div>
-        <span style={sectionHead}>Price Range</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {[['all', 'All Prices'], ['under300', 'Under ₹300'], ['300to500', '₹300 – ₹500'], ['above500', 'Above ₹500']].map(([val, label]) => (
-            <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="price"
-                value={val}
-                checked={priceRange === val}
-                onChange={() => setPriceRange(val)}
-                style={{ accentColor: '#2D5016' }}
-              />
-              <span style={{ fontSize: 13, color: '#444' }}>{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Rating */}
-      <div>
-        <span style={sectionHead}>Min Rating</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {[[0, 'All'], [4, '4+ ★'], [4.5, '4.5+ ★'], [4.7, '4.7+ ★']].map(([val, label]) => (
-            <label key={String(val)} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="rating"
-                checked={minRating === val}
-                onChange={() => setMinRating(Number(val))}
-                style={{ accentColor: '#2D5016' }}
-              />
-              <span style={{ fontSize: 13, color: '#444' }}>{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
+    <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: open ? 16 : 0 }}>
       <button
-        onClick={() => { setSelectedLanguages([]); setSelectedGenres([]); setPriceRange('all'); setMinRating(0); setSearch(''); }}
+        onClick={() => setOpen(o => !o)}
         style={{
-          width: '100%',
-          padding: '9px 0',
-          borderRadius: 10,
-          fontSize: 12,
-          fontWeight: 600,
-          border: '1.5px solid #2D5016',
-          color: '#2D5016',
-          backgroundColor: 'transparent',
-          cursor: 'pointer',
-          transition: 'background 0.2s ease, color 0.2s ease',
-        }}
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#2D5016';
-          (e.currentTarget as HTMLButtonElement).style.color = '#FAF7F2';
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
-          (e.currentTarget as HTMLButtonElement).style.color = '#2D5016';
+          width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          background: 'none', border: 'none', cursor: 'pointer', padding: '14px 0',
+          fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#111',
         }}
       >
-        Clear All Filters
+        {title}
+        <span style={{ fontSize: 14, color: '#999', transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'none' }}>▾</span>
       </button>
+      {open && <div>{children}</div>}
     </div>
   );
 }
 
-// ── Inner page (reads searchParams) ───────────────────────────────────────
+// ── Sidebar ───────────────────────────────────────────────────────────────
+function Sidebar({
+  selectedLanguages, setSelectedLanguages,
+  selectedGenres, setSelectedGenres,
+  priceRange, setPriceRange,
+  availability, setAvailability,
+  onClear,
+  genreCounts, langCounts,
+}: {
+  selectedLanguages: string[]; setSelectedLanguages: (v: string[]) => void;
+  selectedGenres: string[]; setSelectedGenres: (v: string[]) => void;
+  priceRange: string; setPriceRange: (v: string) => void;
+  availability: string[]; setAvailability: (v: string[]) => void;
+  onClear: () => void;
+  genreCounts: Record<string, number>;
+  langCounts: Record<string, number>;
+}) {
+  const toggle = (arr: string[], setArr: (v: string[]) => void, val: string) =>
+    setArr(arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val]);
+
+  const checkboxStyle: React.CSSProperties = { accentColor: '#C82333' };
+  const labelStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '4px 0', fontSize: 13, color: '#333' };
+  const countStyle: React.CSSProperties = { fontSize: 11, color: '#aaa', background: '#f5f5f5', borderRadius: 2, padding: '1px 6px', fontWeight: 600 };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AccordionSection title="Category">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {genres.map(genre => (
+            <label key={genre} style={labelStyle}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input type="checkbox" checked={selectedGenres.includes(genre)} onChange={() => toggle(selectedGenres, setSelectedGenres, genre)} style={checkboxStyle} />
+                {genre}
+              </span>
+              <span style={countStyle}>{genreCounts[genre] ?? 0}</span>
+            </label>
+          ))}
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Language">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {languages.map(lang => (
+            <label key={lang} style={labelStyle}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input type="checkbox" checked={selectedLanguages.includes(lang)} onChange={() => toggle(selectedLanguages, setSelectedLanguages, lang)} style={checkboxStyle} />
+                {lang}
+              </span>
+              <span style={countStyle}>{langCounts[lang] ?? 0}</span>
+            </label>
+          ))}
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Price">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {[['all', 'All Prices'], ['under200', 'Under ₹200'], ['200to400', '₹200 – ₹400'], ['above400', 'Above ₹400']].map(([val, lbl]) => (
+            <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: '#333' }}>
+              <input type="radio" name="price" value={val} checked={priceRange === val} onChange={() => setPriceRange(val)} style={checkboxStyle} />
+              {lbl}
+            </label>
+          ))}
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Availability">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {[['instock', 'In Stock'], ['onsale', 'On Sale']].map(([val, lbl]) => (
+            <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: '#333' }}>
+              <input type="checkbox" checked={availability.includes(val)} onChange={() => toggle(availability, setAvailability, val)} style={checkboxStyle} />
+              {lbl}
+            </label>
+          ))}
+        </div>
+      </AccordionSection>
+
+      <div style={{ paddingTop: 16 }}>
+        <button
+          onClick={onClear}
+          style={{ width: '100%', padding: '9px 0', border: '1.5px solid #C82333', borderRadius: 4, background: '#fff', color: '#C82333', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.05em', transition: 'all 0.18s ease' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#C82333'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff'; (e.currentTarget as HTMLButtonElement).style.color = '#C82333'; }}
+        >
+          Clear All Filters
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Inner page ────────────────────────────────────────────────────────────
 function ShopInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -386,30 +269,28 @@ function ShopInner() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<string>('all');
-  const [minRating, setMinRating] = useState<number>(0);
+  const [availability, setAvailability] = useState<string[]>([]);
   const [sort, setSort] = useState<SortOption>('default');
   const [showFilters, setShowFilters] = useState(false);
   const [view, setView] = useState<ViewMode>('grid');
   const [page, setPage] = useState(1);
   const [booksVisible, setBooksVisible] = useState(false);
+  const [genreCounts, setGenreCounts] = useState<Record<string, number>>(GENRE_COUNTS);
+  const [langCounts, setLangCounts] = useState<Record<string, number>>(LANG_COUNTS);
   const initialised = useRef(false);
 
-  // Read URL params on first mount
   useEffect(() => {
     if (initialised.current) return;
     initialised.current = true;
-
     const genre = searchParams.get('genre');
     const language = searchParams.get('language');
     const maxPrice = searchParams.get('maxPrice');
     const sortParam = searchParams.get('sort');
     const orderParam = searchParams.get('order');
-
     if (genre && genres.includes(genre)) setSelectedGenres([genre]);
     if (language && languages.includes(language)) setSelectedLanguages([language]);
-    if (maxPrice === '299') setPriceRange('under300');
+    if (maxPrice === '199') setPriceRange('under200');
     if (sortParam === 'rating' && orderParam === 'desc') setSort('rating');
-    if (sortParam === 'created_at' && orderParam === 'desc') setSort('default');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -421,9 +302,9 @@ function ShopInner() {
       if (search) params.set('search', search);
       if (selectedLanguages.length === 1) params.set('language', selectedLanguages[0]);
       if (selectedGenres.length === 1) params.set('genre', selectedGenres[0]);
-      if (priceRange === 'under300') params.set('maxPrice', '299');
-      if (priceRange === '300to500') { params.set('minPrice', '300'); params.set('maxPrice', '500'); }
-      if (priceRange === 'above500') params.set('minPrice', '501');
+      if (priceRange === 'under200') params.set('maxPrice', '199');
+      if (priceRange === '200to400') { params.set('minPrice', '200'); params.set('maxPrice', '400'); }
+      if (priceRange === 'above400') params.set('minPrice', '401');
       if (sort === 'price-asc') { params.set('sort', 'price'); params.set('order', 'asc'); }
       else if (sort === 'price-desc') { params.set('sort', 'price'); params.set('order', 'desc'); }
       else if (sort === 'rating') { params.set('sort', 'rating'); params.set('order', 'desc'); }
@@ -435,451 +316,237 @@ function ShopInner() {
       let result: Book[] = data.books || [];
       if (selectedLanguages.length > 1) result = result.filter(b => selectedLanguages.includes(b.language));
       if (selectedGenres.length > 1) result = result.filter(b => selectedGenres.includes(b.genre));
-      if (minRating > 0) result = result.filter(b => b.rating >= minRating);
+      if (availability.includes('instock')) result = result.filter(b => b.stock > 0);
+
+      // Count for sidebar (from full fetch)
+      const gc: Record<string, number> = {};
+      const lc: Record<string, number> = {};
+      (data.books || []).forEach((b: Book) => {
+        gc[b.genre] = (gc[b.genre] || 0) + 1;
+        lc[b.language] = (lc[b.language] || 0) + 1;
+      });
+      if (Object.keys(gc).length) { setGenreCounts(gc); setLangCounts(lc); }
 
       setBooks(result);
       setTotal(data.total || result.length);
       setPage(1);
     } finally {
       setLoading(false);
-      // Slight delay so the fade-in is visible
-      setTimeout(() => setBooksVisible(true), 80);
+      setTimeout(() => setBooksVisible(true), 60);
     }
-  }, [search, selectedLanguages, selectedGenres, priceRange, minRating, sort]);
+  }, [search, selectedLanguages, selectedGenres, priceRange, availability, sort]);
 
   useEffect(() => { fetchBooks(); }, [fetchBooks]);
 
-  // Pagination
   const totalPages = Math.max(1, Math.ceil(books.length / PAGE_SIZE));
   const pageBooks = books.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // Active filters
   const activeFilters: Array<{ label: string; remove: () => void }> = [
     ...selectedLanguages.map(l => ({ label: `Language: ${l}`, remove: () => setSelectedLanguages(selectedLanguages.filter(x => x !== l)) })),
     ...selectedGenres.map(g => ({ label: `Genre: ${g}`, remove: () => setSelectedGenres(selectedGenres.filter(x => x !== g)) })),
-    ...(priceRange !== 'all' ? [{
-      label: priceRange === 'under300' ? 'Under ₹300' : priceRange === '300to500' ? '₹300–₹500' : 'Above ₹500',
-      remove: () => setPriceRange('all'),
-    }] : []),
-    ...(minRating > 0 ? [{ label: `${minRating}+ ★`, remove: () => setMinRating(0) }] : []),
+    ...(priceRange !== 'all' ? [{ label: priceRange === 'under200' ? 'Under ₹200' : priceRange === '200to400' ? '₹200–₹400' : 'Above ₹400', remove: () => setPriceRange('all') }] : []),
+    ...availability.map(a => ({ label: a === 'instock' ? 'In Stock' : 'On Sale', remove: () => setAvailability(availability.filter(x => x !== a)) })),
   ];
 
-  const iconBtn = (active: boolean): React.CSSProperties => ({
-    padding: '8px 12px',
-    borderRadius: 10,
-    border: `1.5px solid ${active ? '#2D5016' : '#E8E0D5'}`,
-    backgroundColor: active ? '#2D5016' : '#fff',
-    color: active ? '#FAF7F2' : '#555',
-    cursor: 'pointer',
-    fontSize: 16,
-    lineHeight: 1,
-    transition: 'all 0.15s ease',
-  });
+  const clearAll = () => { setSelectedLanguages([]); setSelectedGenres([]); setPriceRange('all'); setAvailability([]); setSearch(''); };
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh', fontFamily: 'var(--font-lato), sans-serif' }}>
-      {/* ── Header ── */}
-      <div style={{ backgroundColor: '#2D5016', padding: '48px 0 40px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-playfair), serif',
-              fontSize: 'clamp(28px, 5vw, 44px)',
-              fontWeight: 700,
-              color: '#FAF7F2',
-              marginBottom: 6,
-            }}
-          >
-            Our Collection
-          </h1>
-          <p style={{ color: 'rgba(250,247,242,0.65)', fontSize: 15 }}>
-            {total > 0 ? `${total} books across languages and genres` : 'Discovering books for you…'}
-          </p>
+    <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <style>{`
+        .shop-grid-view { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        @media (max-width: 1100px) { .shop-grid-view { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .shop-grid-view { grid-template-columns: repeat(2, 1fr); } .shop-layout { flex-direction: column !important; } .shop-sidebar-wrap { width: 100% !important; } }
+        .shop-topbar-btn { padding: 8px 10px; border-radius: 4px; border: 1px solid #e0e0e0; background: #fff; color: #444; cursor: pointer; font-size: 15px; line-height: 1; transition: all 0.15s; }
+        .shop-topbar-btn.active { border-color: #C82333; background: #C82333; color: #fff; }
+        .shop-topbar-btn:hover:not(.active) { border-color: #C82333; color: #C82333; }
+        .shop-sort-select { padding: 8px 12px; border-radius: 4px; border: 1px solid #e0e0e0; background: #fff; font-size: 13px; color: #333; cursor: pointer; outline: none; }
+        .shop-sort-select:focus { border-color: #C82333; }
+        .shop-filter-mobile-btn { display: none; padding: 8px 14px; border-radius: 4px; border: 1px solid #C82333; background: #fff; color: #C82333; font-size: 13px; font-weight: 600; cursor: pointer; }
+        @media (max-width: 768px) { .shop-filter-mobile-btn { display: block; } }
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+      `}</style>
+
+      {/* Page header */}
+      <div style={{ borderBottom: '1px solid #f0f0f0', padding: '20px 0', backgroundColor: '#fff' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0, letterSpacing: '-0.01em' }}>All Books</h1>
+            <p style={{ fontSize: 12, color: '#999', margin: '2px 0 0', letterSpacing: '0.02em' }}>
+              {loading ? 'Loading…' : `${total} books available`}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            <button className="shop-filter-mobile-btn" onClick={() => setShowFilters(f => !f)}>
+              {showFilters ? 'Hide Filters' : 'Filters ▾'}
+            </button>
+            <select className="shop-sort-select" value={sort} onChange={e => setSort(e.target.value as SortOption)}>
+              <option value="default">Sort: Default</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="title">Title: A–Z</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 32px 64px' }}>
-        {/* ── Search + Sort + View toggle ── */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 12,
-            marginBottom: activeFilters.length > 0 ? 12 : 24,
-            alignItems: 'center',
-          }}
-        >
-          {/* Search */}
-          <div style={{ flex: '1 1 240px', position: 'relative' }}>
-            <span
-              style={{
-                position: 'absolute',
-                left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#aaa',
-                fontSize: 16,
-                pointerEvents: 'none',
-              }}
-            >
-              🔍
-            </span>
-            <input
-              type="text"
-              placeholder="Search by title or author…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                width: '100%',
-                paddingLeft: 38,
-                paddingRight: 16,
-                paddingTop: 11,
-                paddingBottom: 11,
-                borderRadius: 12,
-                border: '1.5px solid #E8E0D5',
-                backgroundColor: '#fff',
-                fontSize: 14,
-                outline: 'none',
-                color: '#1a1a1a',
-              }}
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 24px 64px', display: 'flex', gap: 28, alignItems: 'flex-start' }} className="shop-layout">
+
+        {/* Sidebar */}
+        <aside className="shop-sidebar-wrap" style={{ width: 220, flexShrink: 0, display: showFilters || typeof window === 'undefined' ? 'block' : undefined }} id="shop-sidebar">
+          <style>{`
+            @media (min-width: 769px) { #shop-sidebar { display: block !important; } }
+            @media (max-width: 768px) { #shop-sidebar { display: ${showFilters ? 'block' : 'none'} !important; } }
+          `}</style>
+          <div style={{ position: 'sticky', top: 80, background: '#fff', border: '1px solid #e8e8e8', borderRadius: 4, padding: '8px 16px 16px' }}>
+            <Sidebar
+              selectedLanguages={selectedLanguages}
+              setSelectedLanguages={setSelectedLanguages}
+              selectedGenres={selectedGenres}
+              setSelectedGenres={setSelectedGenres}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              availability={availability}
+              setAvailability={setAvailability}
+              onClear={clearAll}
+              genreCounts={genreCounts}
+              langCounts={langCounts}
             />
           </div>
+        </aside>
 
-          {/* Sort */}
-          <select
-            value={sort}
-            onChange={e => setSort(e.target.value as SortOption)}
-            style={{
-              padding: '11px 14px',
-              borderRadius: 12,
-              border: '1.5px solid #E8E0D5',
-              backgroundColor: '#fff',
-              fontSize: 13,
-              color: '#1a1a1a',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="default">Sort: Default</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="rating">Highest Rated</option>
-            <option value="title">Title: A–Z</option>
-          </select>
-
-          {/* View toggle */}
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              onClick={() => setView('grid')}
-              title="Grid view"
-              style={iconBtn(view === 'grid')}
-              aria-pressed={view === 'grid'}
-            >
-              ⊞
-            </button>
-            <button
-              onClick={() => setView('list')}
-              title="List view"
-              style={iconBtn(view === 'list')}
-              aria-pressed={view === 'list'}
-            >
-              ☰
-            </button>
-          </div>
-
-          {/* Mobile filter toggle */}
-          <button
-            style={{
-              padding: '11px 16px',
-              borderRadius: 12,
-              border: '1.5px solid #E8E0D5',
-              backgroundColor: showFilters ? '#2D5016' : '#fff',
-              color: showFilters ? '#FAF7F2' : '#555',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'none',
-            }}
-            className="md-hide-on-desktop"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            {showFilters ? 'Hide Filters' : 'Filters ⚙️'}
-          </button>
-        </div>
-
-        {/* ── Active filters chips ── */}
-        {activeFilters.length > 0 && (
-          <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              marginBottom: 24,
-            }}
-          >
-            <span style={{ fontSize: 12, color: '#999', flexShrink: 0 }}>Active filters:</span>
-            {activeFilters.map(f => (
-              <FilterChip key={f.label} label={f.label} onRemove={f.remove} />
-            ))}
-            <button
-              onClick={() => {
-                setSelectedLanguages([]); setSelectedGenres([]);
-                setPriceRange('all'); setMinRating(0); setSearch('');
-              }}
-              style={{
-                fontSize: 11,
-                color: '#8B4513',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                textDecoration: 'underline',
-                padding: 0,
-                flexShrink: 0,
-              }}
-            >
-              Clear all
-            </button>
-          </div>
-        )}
-
-        <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
-          {/* ── Sidebar ── */}
-          <aside
-            style={{
-              width: 220,
-              flexShrink: 0,
-              display: showFilters ? 'block' : undefined,
-            }}
-            className="shop-sidebar"
-          >
-            <div
-              style={{
-                borderRadius: 18,
-                padding: 24,
-                position: 'sticky',
-                top: 80,
-                backgroundColor: '#fff',
-                border: '1px solid #E8E0D5',
-              }}
-            >
-              <h2
-                style={{
-                  fontFamily: 'var(--font-playfair), serif',
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: '#2D5016',
-                  marginBottom: 20,
-                }}
-              >
-                Filters
-              </h2>
-              <Sidebar
-                selectedLanguages={selectedLanguages}
-                setSelectedLanguages={setSelectedLanguages}
-                selectedGenres={selectedGenres}
-                setSelectedGenres={setSelectedGenres}
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                minRating={minRating}
-                setMinRating={setMinRating}
-                setSearch={setSearch}
-              />
-            </div>
-          </aside>
-
-          {/* ── Books area ── */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                fontSize: 13,
-                color: '#999',
-                marginBottom: 16,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <span>
-                Showing <strong style={{ color: '#1a1a1a' }}>{pageBooks.length}</strong> of{' '}
-                <strong style={{ color: '#1a1a1a' }}>{books.length}</strong> books
+        {/* Main content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Top bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', flex: 1 }}>
+              {/* Search */}
+              <div style={{ position: 'relative', flex: '1 1 200px', maxWidth: 340 }}>
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#aaa', fontSize: 13, pointerEvents: 'none' }}>🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search title or author…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  style={{ width: '100%', paddingLeft: 32, paddingRight: 12, paddingTop: 8, paddingBottom: 8, border: '1px solid #e0e0e0', borderRadius: 4, fontSize: 13, color: '#111', outline: 'none', transition: 'border-color 0.15s' }}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#C82333')}
+                  onBlur={e => (e.currentTarget.style.borderColor = '#e0e0e0')}
+                />
+              </div>
+              <span style={{ fontSize: 12, color: '#999', whiteSpace: 'nowrap' }}>
+                Showing <strong style={{ color: '#111' }}>{pageBooks.length}</strong> of <strong style={{ color: '#111' }}>{books.length}</strong>
               </span>
-              {totalPages > 1 && (
-                <span style={{ color: '#aaa' }}>
-                  Page {page} of {totalPages}
-                </span>
-              )}
             </div>
-
-            {loading ? (
-              <div
-                style={{
-                  display: view === 'list'
-                    ? 'flex'
-                    : 'grid',
-                  gridTemplateColumns: view === 'grid' ? 'repeat(auto-fill, minmax(200px, 1fr))' : undefined,
-                  flexDirection: view === 'list' ? 'column' : undefined,
-                  gap: 16,
-                }}
+            {/* View toggle */}
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button
+                className={`shop-topbar-btn${view === 'grid' ? ' active' : ''}`}
+                onClick={() => setView('grid')}
+                title="Grid view"
+                aria-pressed={view === 'grid'}
               >
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <SkeletonCard key={i} view={view} />
-                ))}
-              </div>
-            ) : pageBooks.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '80px 0' }}>
-                <div style={{ fontSize: 52, marginBottom: 16 }}>📚</div>
-                <p style={{ color: '#888', fontSize: 15 }}>No books found. Try adjusting your filters.</p>
-                <button
-                  onClick={() => { setSelectedLanguages([]); setSelectedGenres([]); setPriceRange('all'); setMinRating(0); setSearch(''); }}
-                  style={{
-                    marginTop: 16,
-                    padding: '10px 24px',
-                    borderRadius: 10,
-                    border: 'none',
-                    backgroundColor: '#2D5016',
-                    color: '#FAF7F2',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Clear filters
-                </button>
-              </div>
-            ) : view === 'list' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {booksVisible && pageBooks.map((book, i) => (
-                  <BookListRow key={book.id} book={book} index={i} />
-                ))}
+                ⊞
+              </button>
+              <button
+                className={`shop-topbar-btn${view === 'list' ? ' active' : ''}`}
+                onClick={() => setView('list')}
+                title="List view"
+                aria-pressed={view === 'list'}
+              >
+                ☰
+              </button>
+            </div>
+          </div>
+
+          {/* Active filter chips */}
+          {activeFilters.length > 0 && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ fontSize: 11, color: '#aaa', flexShrink: 0 }}>Filters:</span>
+              {activeFilters.map(f => <FilterChip key={f.label} label={f.label} onRemove={f.remove} />)}
+              <button onClick={clearAll} style={{ fontSize: 11, color: '#C82333', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>Clear all</button>
+            </div>
+          )}
+
+          {/* Books */}
+          {loading ? (
+            view === 'list' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} view="list" />)}
               </div>
             ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                  gap: 18,
-                }}
-              >
-                {booksVisible && pageBooks.map((book, i) => (
-                  <div
-                    key={book.id}
-                    className={`animate-fadeInUp delay-${Math.min((i % 6 + 1) * 100, 600) as 100 | 200 | 300 | 400 | 500 | 600}`}
-                    style={{ opacity: 0, animationFillMode: 'both' }}
-                  >
-                    <BookCard book={{ ...book, coverColor: book.cover_color } as never} />
-                  </div>
-                ))}
+              <div className="shop-grid-view">
+                {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} view="grid" />)}
               </div>
-            )}
-
-            {/* ── Pagination ── */}
-            {!loading && totalPages > 1 && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  marginTop: 40,
-                }}
+            )
+          ) : pageBooks.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>📚</div>
+              <p style={{ color: '#888', fontSize: 15, marginBottom: 16 }}>No books found. Try adjusting your filters.</p>
+              <button
+                onClick={clearAll}
+                style={{ padding: '10px 24px', border: 'none', borderRadius: 4, background: '#C82333', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
               >
-                <button
-                  onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  disabled={page === 1}
-                  style={{
-                    padding: '9px 20px',
-                    borderRadius: 10,
-                    border: '1.5px solid #E8E0D5',
-                    backgroundColor: page === 1 ? '#f5f5f5' : '#fff',
-                    color: page === 1 ? '#ccc' : '#2D5016',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: page === 1 ? 'default' : 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  ← Prev
-                </button>
+                Clear Filters
+              </button>
+            </div>
+          ) : view === 'list' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {booksVisible && pageBooks.map(book => <BookListRow key={book.id} book={book} />)}
+            </div>
+          ) : (
+            <div className="shop-grid-view">
+              {booksVisible && pageBooks.map(book => (
+                <BookCard key={book.id} book={{ ...book, coverColor: book.cover_color } as never} />
+              ))}
+            </div>
+          )}
 
-                {/* Page numbers */}
-                {Array.from({ length: totalPages }).map((_, idx) => {
-                  const p = idx + 1;
-                  if (totalPages <= 7 || p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
-                    return (
-                      <button
-                        key={p}
-                        onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 8,
-                          border: `1.5px solid ${page === p ? '#2D5016' : '#E8E0D5'}`,
-                          backgroundColor: page === p ? '#2D5016' : '#fff',
-                          color: page === p ? '#FAF7F2' : '#444',
-                          fontSize: 13,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                        }}
-                      >
-                        {p}
-                      </button>
-                    );
-                  }
-                  if (p === page - 2 || p === page + 2) {
-                    return <span key={p} style={{ color: '#bbb', fontSize: 14 }}>…</span>;
-                  }
-                  return null;
-                })}
-
-                <button
-                  onClick={() => { setPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  disabled={page === totalPages}
-                  style={{
-                    padding: '9px 20px',
-                    borderRadius: 10,
-                    border: '1.5px solid #E8E0D5',
-                    backgroundColor: page === totalPages ? '#f5f5f5' : '#fff',
-                    color: page === totalPages ? '#ccc' : '#2D5016',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: page === totalPages ? 'default' : 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  Next →
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 40 }}>
+              <button
+                onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                disabled={page === 1}
+                style={{ padding: '8px 16px', border: '1px solid #e0e0e0', borderRadius: 4, background: page === 1 ? '#f5f5f5' : '#fff', color: page === 1 ? '#ccc' : '#333', fontSize: 13, fontWeight: 600, cursor: page === 1 ? 'default' : 'pointer' }}
+              >
+                ← Prev
+              </button>
+              {Array.from({ length: totalPages }).map((_, idx) => {
+                const p = idx + 1;
+                if (totalPages <= 7 || p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
+                  return (
+                    <button
+                      key={p}
+                      onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      style={{ width: 34, height: 34, border: `1px solid ${page === p ? '#C82333' : '#e0e0e0'}`, borderRadius: 4, background: page === p ? '#C82333' : '#fff', color: page === p ? '#fff' : '#444', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      {p}
+                    </button>
+                  );
+                }
+                if (p === page - 2 || p === page + 2) return <span key={p} style={{ color: '#bbb', fontSize: 14 }}>…</span>;
+                return null;
+              })}
+              <button
+                onClick={() => { setPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                disabled={page === totalPages}
+                style={{ padding: '8px 16px', border: '1px solid #e0e0e0', borderRadius: 4, background: page === totalPages ? '#f5f5f5' : '#fff', color: page === totalPages ? '#ccc' : '#333', fontSize: 13, fontWeight: 600, cursor: page === totalPages ? 'default' : 'pointer' }}
+              >
+                Next →
+              </button>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Responsive sidebar visibility */}
-      <style>{`
-        @media (max-width: 768px) {
-          .shop-sidebar { display: ${showFilters ? 'block' : 'none'} !important; width: 100% !important; }
-          .md-hide-on-desktop { display: block !important; }
-        }
-        @media (min-width: 769px) {
-          .shop-sidebar { display: block !important; }
-          .md-hide-on-desktop { display: none !important; }
-        }
-      `}</style>
     </div>
   );
 }
 
-// ── Page shell — wraps inner in Suspense for useSearchParams ──────────────
 export default function ShopPage() {
   return (
     <Suspense fallback={
-      <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div className="skeleton" style={{ width: 48, height: 48, borderRadius: '50%', margin: '0 auto 16px' }} />
-          <p style={{ color: '#aaa', fontSize: 14 }}>Loading shop…</p>
-        </div>
+      <div style={{ background: '#fff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#aaa', fontSize: 14 }}>Loading shop…</p>
       </div>
     }>
       <ShopInner />

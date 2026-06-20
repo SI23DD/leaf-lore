@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@backend/lib/supabaseAdmin';
 
 // GET /api/books — list all books with optional filters
 export async function GET(req: NextRequest) {

@@ -28,14 +28,14 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#FAF7F2' }}>
+    <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#ffffff' }}>
       <div className="w-full max-w-sm animate-scaleIn">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3 animate-float">🍃</div>
-          <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#2D5016' }} className="text-2xl font-bold">Admin Access</h1>
+          <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-2xl font-bold">Admin Access</h1>
           <p className="text-gray-500 text-sm mt-1">Shop owners only</p>
         </div>
-        <div className="rounded-2xl p-8 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #E8E0D5' }}>
+        <div className="rounded-2xl p-8 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="text-xs font-medium text-gray-600 block mb-1.5">Admin Secret Key</label>
@@ -46,15 +46,15 @@ export default function AdminLoginPage() {
                 placeholder="Enter your admin key"
                 required
                 className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-                style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
-                onFocus={e => e.target.style.borderColor = '#2D5016'}
-                onBlur={e => e.target.style.borderColor = '#E8E0D5'}
+                style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                onFocus={e => e.target.style.borderColor = '#C82333'}
+                onBlur={e => e.target.style.borderColor = '#e5e5e5'}
               />
             </div>
             {error && <p className="text-red-500 text-xs">{error}</p>}
             <button type="submit" disabled={loading}
               className="w-full py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90 disabled:opacity-60"
-              style={{ backgroundColor: '#2D5016', color: 'white' }}>
+              style={{ backgroundColor: '#C82333', color: 'white' }}>
               {loading ? 'Verifying…' : 'Enter Admin Panel'}
             </button>
           </form>

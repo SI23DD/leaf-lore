@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import AccountSidebar from '@/components/AccountSidebar';
+import { useAuth } from '@frontend/context/AuthContext';
+import AccountSidebar from '@frontend/components/AccountSidebar';
 
 const PREFS_KEY = 'll_prefs';
 
@@ -26,40 +26,40 @@ interface Toast { message: string; type: 'success' | 'error' }
 
 function Toggle({ checked, onChange, label, desc }: { checked: boolean; onChange: (v: boolean) => void; label: string; desc?: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '14px 0' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '13px 0' }}>
       <div style={{ flex: 1 }}>
-        <p style={{ fontWeight: '500', color: '#1a1a1a', fontSize: '14px', marginBottom: desc ? '2px' : '0' }}>{label}</p>
-        {desc && <p style={{ fontSize: '12px', color: '#9A8E85' }}>{desc}</p>}
+        <p style={{ fontWeight: '600', color: '#1C1C1C', fontSize: '13px', marginBottom: desc ? '2px' : '0' }}>{label}</p>
+        {desc && <p style={{ fontSize: '12px', color: '#6B7280' }}>{desc}</p>}
       </div>
       <button
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         style={{
-          width: '44px',
-          height: '24px',
+          width: '42px',
+          height: '23px',
           borderRadius: '12px',
           border: 'none',
           cursor: 'pointer',
-          backgroundColor: checked ? '#2D5016' : '#D4C9BE',
+          backgroundColor: checked ? '#C82333' : '#D1D5DB',
           position: 'relative',
           flexShrink: 0,
-          transition: 'background-color 0.25s ease',
+          transition: 'background-color 0.2s ease',
           padding: '0',
         }}
       >
         <span
           style={{
             display: 'block',
-            width: '18px',
-            height: '18px',
+            width: '17px',
+            height: '17px',
             borderRadius: '50%',
-            backgroundColor: 'white',
+            backgroundColor: '#FFFFFF',
             position: 'absolute',
             top: '3px',
-            left: checked ? '23px' : '3px',
-            transition: 'left 0.25s ease',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+            left: checked ? '22px' : '3px',
+            transition: 'left 0.2s ease',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
           }}
         />
       </button>
@@ -72,16 +72,16 @@ function SectionCard({ title, icon, children, delay }: { title: string; icon: st
     <div
       className={`animate-fadeInUp ${delay || ''}`}
       style={{
-        backgroundColor: 'white',
-        border: '1px solid #E8E0D5',
-        borderRadius: '20px',
-        padding: '24px 28px',
-        marginBottom: '20px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E5E7EB',
+        borderRadius: '8px',
+        padding: '20px 24px',
+        marginBottom: '16px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid #F0EBE3' }}>
-        <span style={{ fontSize: '20px' }}>{icon}</span>
-        <h2 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '17px', fontWeight: '600', color: '#1a1a1a' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #F3F4F6' }}>
+        <span style={{ fontSize: '18px' }}>{icon}</span>
+        <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.01em' }}>
           {title}
         </h2>
       </div>
@@ -126,21 +126,20 @@ export default function SettingsPage() {
       showToast('Email does not match.', 'error');
       return;
     }
-    // In a real app this would call an API
     logout();
     router.push('/');
   }
 
   if (loading || !user) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#FAF7F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '8px' }} />
+      <div style={{ minHeight: '100vh', backgroundColor: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '6px' }} />
       </div>
     );
   }
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh', padding: '40px 24px' }}>
+    <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       {/* Toast */}
       {toast && (
         <div
@@ -151,13 +150,13 @@ export default function SettingsPage() {
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1000,
-            backgroundColor: toast.type === 'success' ? '#2D5016' : '#991B1B',
-            color: 'white',
-            padding: '12px 24px',
+            backgroundColor: toast.type === 'success' ? '#28A745' : '#C82333',
+            color: '#FFFFFF',
+            padding: '11px 22px',
             borderRadius: '100px',
-            fontSize: '14px',
-            fontWeight: '600',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            fontSize: '13px',
+            fontWeight: '700',
+            boxShadow: '0 6px 24px rgba(0,0,0,0.14)',
             whiteSpace: 'nowrap',
           }}
         >
@@ -172,7 +171,7 @@ export default function SettingsPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
+            backgroundColor: 'rgba(0,0,0,0.45)',
             zIndex: 500,
             display: 'flex',
             alignItems: 'center',
@@ -184,32 +183,23 @@ export default function SettingsPage() {
           <div
             className="animate-scaleIn"
             style={{
-              backgroundColor: 'white',
-              borderRadius: '20px',
-              padding: '32px',
-              maxWidth: '440px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '10px',
+              padding: '28px',
+              maxWidth: '420px',
               width: '100%',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.2)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+              borderTop: '4px solid #C82333',
             }}
           >
-            <div style={{ fontSize: '40px', marginBottom: '16px', textAlign: 'center' }}>⚠️</div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-playfair), serif',
-                fontSize: '20px',
-                fontWeight: '700',
-                color: '#1a1a1a',
-                marginBottom: '8px',
-                textAlign: 'center',
-              }}
-            >
+            <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#1C1C1C', marginBottom: '8px', letterSpacing: '-0.01em' }}>
               Delete Account
             </h2>
-            <p style={{ fontSize: '14px', color: '#9A8E85', textAlign: 'center', marginBottom: '20px', lineHeight: '1.6' }}>
-              This will permanently delete your account and all your order history. This action cannot be undone.
+            <p style={{ fontSize: '13px', color: '#6B7280', marginBottom: '18px', lineHeight: '1.55' }}>
+              This permanently deletes your account and all order history. This cannot be undone.
             </p>
-            <p style={{ fontSize: '13px', fontWeight: '600', color: '#5A5048', marginBottom: '8px' }}>
-              Type your email to confirm: <span style={{ color: '#991B1B' }}>{user.email}</span>
+            <p style={{ fontSize: '12px', fontWeight: '600', color: '#374151', marginBottom: '7px' }}>
+              Type your email to confirm: <span style={{ color: '#C82333' }}>{user.email}</span>
             </p>
             <input
               type="email"
@@ -218,27 +208,28 @@ export default function SettingsPage() {
               placeholder={user.email}
               style={{
                 width: '100%',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                border: '1.5px solid #FECACA',
-                backgroundColor: '#FFF5F5',
-                fontSize: '14px',
+                padding: '9px 13px',
+                borderRadius: '6px',
+                border: '1.5px solid #FECDD3',
+                backgroundColor: '#FFF0F0',
+                fontSize: '13px',
                 outline: 'none',
-                marginBottom: '20px',
+                marginBottom: '18px',
+                boxSizing: 'border-box',
               }}
             />
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => { setShowDeleteModal(false); setDeleteConfirm(''); }}
                 style={{
                   flex: 1,
-                  padding: '11px',
+                  padding: '10px',
                   borderRadius: '100px',
-                  border: '1.5px solid #E8E0D5',
+                  border: '1.5px solid #E5E7EB',
                   backgroundColor: 'transparent',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#5A5048',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: '#374151',
                   cursor: 'pointer',
                 }}
               >
@@ -248,13 +239,13 @@ export default function SettingsPage() {
                 onClick={handleDeleteAccount}
                 style={{
                   flex: 1,
-                  padding: '11px',
+                  padding: '10px',
                   borderRadius: '100px',
                   border: 'none',
-                  backgroundColor: '#991B1B',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: '600',
+                  backgroundColor: '#C82333',
+                  color: '#FFFFFF',
+                  fontSize: '13px',
+                  fontWeight: '700',
                   cursor: 'pointer',
                 }}
               >
@@ -269,11 +260,11 @@ export default function SettingsPage() {
         <AccountSidebar />
 
         <main style={{ flex: 1, minWidth: 0 }}>
-          <div className="animate-fadeInUp" style={{ marginBottom: '28px' }}>
-            <p style={{ color: '#8B4513', fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '600' }}>
-              Your Preferences
+          <div className="animate-fadeInUp" style={{ marginBottom: '24px' }}>
+            <p style={{ color: '#C82333', fontSize: '12px', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '700' }}>
+              Your Account
             </p>
-            <h1 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '32px', fontWeight: '700', color: '#1a1a1a' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.02em' }}>
               Settings
             </h1>
           </div>
@@ -286,14 +277,14 @@ export default function SettingsPage() {
               label="Email Notifications"
               desc="Receive emails about your account activity."
             />
-            <div style={{ borderTop: '1px solid #F0EBE3' }} />
+            <div style={{ borderTop: '1px solid #F3F4F6' }} />
             <Toggle
               checked={prefs.orderUpdates}
               onChange={(v) => updatePref('orderUpdates', v)}
               label="Order Updates"
               desc="Get notified when your order status changes."
             />
-            <div style={{ borderTop: '1px solid #F0EBE3' }} />
+            <div style={{ borderTop: '1px solid #F3F4F6' }} />
             <Toggle
               checked={prefs.newsletters}
               onChange={(v) => updatePref('newsletters', v)}
@@ -304,21 +295,21 @@ export default function SettingsPage() {
 
           {/* Preferences */}
           <SectionCard title="Preferences" icon="🌍" delay="delay-200">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '8px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '7px 0' }}>
               <div>
-                <p style={{ fontWeight: '500', color: '#1a1a1a', fontSize: '14px', marginBottom: '2px' }}>Language</p>
-                <p style={{ fontSize: '12px', color: '#9A8E85' }}>Interface language for Leaf & Lore.</p>
+                <p style={{ fontWeight: '600', color: '#1C1C1C', fontSize: '13px', marginBottom: '2px' }}>Language</p>
+                <p style={{ fontSize: '12px', color: '#6B7280' }}>Interface language for Leaf &amp; Lore.</p>
               </div>
               <select
                 value={prefs.language}
                 onChange={(e) => updatePref('language', e.target.value)}
                 style={{
-                  padding: '8px 14px',
-                  borderRadius: '10px',
-                  border: '1.5px solid #E8E0D5',
-                  backgroundColor: '#FAF7F2',
-                  fontSize: '13px',
-                  color: '#1a1a1a',
+                  padding: '7px 12px',
+                  borderRadius: '6px',
+                  border: '1.5px solid #E5E7EB',
+                  backgroundColor: '#F9FAFB',
+                  fontSize: '12px',
+                  color: '#1C1C1C',
                   outline: 'none',
                   cursor: 'pointer',
                 }}
@@ -328,20 +319,20 @@ export default function SettingsPage() {
                 ))}
               </select>
             </div>
-            <div style={{ borderTop: '1px solid #F0EBE3', paddingTop: '14px', marginTop: '6px' }}>
+            <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: '12px', marginTop: '6px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <p style={{ fontWeight: '500', color: '#1a1a1a', fontSize: '14px', marginBottom: '2px' }}>Currency</p>
-                  <p style={{ fontSize: '12px', color: '#9A8E85' }}>All prices are shown in Indian Rupees.</p>
+                  <p style={{ fontWeight: '600', color: '#1C1C1C', fontSize: '13px', marginBottom: '2px' }}>Currency</p>
+                  <p style={{ fontSize: '12px', color: '#6B7280' }}>All prices are shown in Indian Rupees.</p>
                 </div>
                 <span
                   style={{
-                    padding: '6px 14px',
+                    padding: '5px 12px',
                     borderRadius: '100px',
-                    backgroundColor: '#F0EBE3',
-                    fontSize: '13px',
-                    color: '#8B4513',
-                    fontWeight: '600',
+                    backgroundColor: '#F3F4F6',
+                    fontSize: '12px',
+                    color: '#374151',
+                    fontWeight: '700',
                   }}
                 >
                   ₹ INR
@@ -356,33 +347,33 @@ export default function SettingsPage() {
               checked={prefs.lightMode}
               onChange={(v) => updatePref('lightMode', v)}
               label="Light Mode"
-              desc="The earthy cream theme — our recommended reading environment."
+              desc="Clean white theme — the default reading environment."
             />
-            <p style={{ fontSize: '12px', color: '#B0A89E', marginTop: '4px' }}>
+            <p style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '4px' }}>
               Dark mode is in the works. We want it to feel just right before we ship it.
             </p>
           </SectionCard>
 
           {/* Privacy */}
           <SectionCard title="Privacy & Account" icon="🔒" delay="delay-400">
-            <div style={{ padding: '8px 0' }}>
-              <p style={{ fontSize: '14px', color: '#5A5048', lineHeight: '1.6', marginBottom: '16px' }}>
+            <div style={{ padding: '7px 0' }}>
+              <p style={{ fontSize: '13px', color: '#374151', lineHeight: '1.6', marginBottom: '14px' }}>
                 Your data is yours. We never sell it or share it with third parties beyond what&apos;s needed to fulfil your orders.
               </p>
               <button
                 onClick={() => setShowDeleteModal(true)}
                 style={{
-                  padding: '10px 22px',
+                  padding: '9px 20px',
                   borderRadius: '100px',
-                  border: '1.5px solid #FECACA',
+                  border: '1.5px solid #FECDD3',
                   backgroundColor: 'transparent',
-                  color: '#991B1B',
-                  fontSize: '13px',
-                  fontWeight: '600',
+                  color: '#C82333',
+                  fontSize: '12px',
+                  fontWeight: '700',
                   cursor: 'pointer',
-                  transition: 'background-color 0.2s',
+                  transition: 'background-color 0.15s',
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FFF5F5'; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FFF0F0'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
               >
                 Delete My Account

@@ -48,20 +48,20 @@ export default function ContactPage() {
   }
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <style>{`
         :root {
-          --green: #2D5016;
-          --brown: #8B4513;
-          --cream: #FAF7F2;
+          --green: #C82333;
+          --brown: #666666;
+          --cream: #ffffff;
           --surface: #F0EBE3;
           --green-light: #4A7A25;
-          --green-muted: rgba(45,80,22,0.08);
+          --green-muted: rgba(200,35,51,0.08);
         }
 
         /* ── Hero ── */
         .contact-hero {
-          background: linear-gradient(135deg, #2D5016 0%, #3d6b1e 50%, #1e3a0d 100%);
+          background: linear-gradient(135deg, #C82333 0%, #A71D2A 50%, #8B0000 100%);
           position: relative;
           overflow: hidden;
           padding: 80px 24px 96px;
@@ -168,7 +168,7 @@ export default function ContactPage() {
           background: #fff;
           border-radius: 16px;
           padding: 40px 36px;
-          box-shadow: 0 4px 24px rgba(45,80,22,0.08);
+          box-shadow: 0 4px 24px rgba(200,35,51,0.08);
           animation: fadeInLeft 0.6s 0.1s ease both;
           position: relative;
         }
@@ -176,7 +176,7 @@ export default function ContactPage() {
           font-family: var(--font-playfair, Georgia, serif);
           font-size: 1.45rem;
           font-weight: 700;
-          color: #2D5016;
+          color: #C82333;
           margin: 0 0 8px;
         }
         .form-section-sub {
@@ -219,12 +219,12 @@ export default function ContactPage() {
           font-family: inherit;
         }
         .form-input:focus {
-          border-color: #2D5016;
-          box-shadow: 0 0 0 3px rgba(45,80,22,0.12);
+          border-color: #C82333;
+          box-shadow: 0 0 0 3px rgba(200,35,51,0.12);
         }
         textarea.form-input { resize: vertical; min-height: 120px; }
         select.form-input { cursor: pointer; appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232D5016' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C82333' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
           background-repeat: no-repeat;
           background-position: right 14px center;
           padding-right: 36px;
@@ -232,7 +232,7 @@ export default function ContactPage() {
         .submit-btn {
           width: 100%;
           padding: 14px;
-          background: #2D5016;
+          background: #C82333;
           color: #fff;
           border: none;
           border-radius: 8px;
@@ -247,7 +247,7 @@ export default function ContactPage() {
           gap: 8px;
           font-family: inherit;
         }
-        .submit-btn:hover:not(:disabled) { background: #3d6b1e; transform: translateY(-1px); }
+        .submit-btn:hover:not(:disabled) { background: #A71D2A; transform: translateY(-1px); }
         .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* Spinner */
@@ -272,7 +272,7 @@ export default function ContactPage() {
         }
         .success-check {
           width: 64px; height: 64px;
-          background: #2D5016;
+          background: #C82333;
           border-radius: 50%;
           display: flex; align-items: center; justify-content: center;
           color: #fff;
@@ -283,7 +283,7 @@ export default function ContactPage() {
           font-family: var(--font-playfair, Georgia, serif);
           font-size: 1.6rem;
           font-weight: 700;
-          color: #2D5016;
+          color: #C82333;
         }
         .success-body { font-size: 0.925rem; color: #666; max-width: 280px; line-height: 1.65; }
 
@@ -296,14 +296,14 @@ export default function ContactPage() {
           display: flex;
           align-items: flex-start;
           gap: 16px;
-          box-shadow: 0 2px 12px rgba(45,80,22,0.07);
+          box-shadow: 0 2px 12px rgba(200,35,51,0.07);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .info-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,80,22,0.12); }
+        .info-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,35,51,0.12); }
         .info-icon {
           width: 40px; height: 40px;
           border-radius: 10px;
-          background: rgba(45,80,22,0.08);
+          background: rgba(200,35,51,0.08);
           display: flex; align-items: center; justify-content: center;
           font-size: 1.2rem;
           flex-shrink: 0;
@@ -313,7 +313,7 @@ export default function ContactPage() {
         .info-sub { font-size: 0.82rem; color: #888; margin-top: 1px; }
 
         .map-card {
-          background: linear-gradient(135deg, #2D5016 0%, #3d6b1e 100%);
+          background: linear-gradient(135deg, #C82333 0%, #A71D2A 100%);
           border-radius: 12px;
           padding: 28px 22px;
           display: flex;
@@ -324,11 +324,11 @@ export default function ContactPage() {
           gap: 10px;
           min-height: 130px;
           cursor: pointer;
-          box-shadow: 0 2px 12px rgba(45,80,22,0.18);
+          box-shadow: 0 2px 12px rgba(200,35,51,0.18);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
           text-decoration: none;
         }
-        .map-card:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(45,80,22,0.28); }
+        .map-card:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(200,35,51,0.28); }
         .map-grid-overlay {
           position: absolute;
           inset: 0;
@@ -354,7 +354,7 @@ export default function ContactPage() {
           font-family: var(--font-playfair, Georgia, serif);
           font-size: 1.7rem;
           font-weight: 700;
-          color: #2D5016;
+          color: #C82333;
           margin: 0 0 8px;
         }
         .faq-subheading { font-size: 0.9rem; color: #888; margin: 0 0 28px; }
@@ -363,7 +363,7 @@ export default function ContactPage() {
           background: #fff;
           border-radius: 12px;
           overflow: hidden;
-          box-shadow: 0 2px 8px rgba(45,80,22,0.06);
+          box-shadow: 0 2px 8px rgba(200,35,51,0.06);
           border: 1px solid #EEE8E0;
         }
         .faq-trigger {
@@ -383,14 +383,14 @@ export default function ContactPage() {
           font-family: inherit;
           transition: background 0.15s ease;
         }
-        .faq-trigger:hover { background: rgba(45,80,22,0.03); }
+        .faq-trigger:hover { background: rgba(200,35,51,0.03); }
         .faq-chevron {
           width: 20px; height: 20px;
           border-radius: 50%;
-          background: rgba(45,80,22,0.08);
+          background: rgba(200,35,51,0.08);
           display: flex; align-items: center; justify-content: center;
           font-size: 0.7rem;
-          color: #2D5016;
+          color: #C82333;
           flex-shrink: 0;
           transition: transform 0.3s ease;
         }

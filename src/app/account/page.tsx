@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import AccountSidebar from '@/components/AccountSidebar';
+import { useAuth } from '@frontend/context/AuthContext';
+import AccountSidebar from '@frontend/components/AccountSidebar';
 
 interface OrderItem {
   id: string;
@@ -34,28 +34,19 @@ function StatCard({ value, label, delay, icon }: { value: string; label: string;
     <div
       className={`animate-fadeInUp ${delay}`}
       style={{
-        backgroundColor: 'white',
-        border: '1px solid #E8E0D5',
-        borderRadius: '16px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E5E7EB',
+        borderRadius: '8px',
         padding: '20px 24px',
         flex: '1',
         minWidth: '120px',
       }}
     >
-      <div style={{ fontSize: '24px', marginBottom: '8px' }}>{icon}</div>
-      <p
-        style={{
-          fontFamily: 'var(--font-playfair), serif',
-          fontSize: '28px',
-          fontWeight: '700',
-          color: '#2D5016',
-          lineHeight: '1',
-          marginBottom: '4px',
-        }}
-      >
+      <div style={{ fontSize: '22px', marginBottom: '8px' }}>{icon}</div>
+      <p style={{ fontSize: '26px', fontWeight: '700', color: '#C82333', lineHeight: '1', marginBottom: '4px' }}>
         {value}
       </p>
-      <p style={{ fontSize: '12px', color: '#9A8E85', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+      <p style={{ fontSize: '11px', color: '#6B7280', letterSpacing: '0.6px', textTransform: 'uppercase', fontWeight: '600' }}>
         {label}
       </p>
     </div>
@@ -87,8 +78,8 @@ export default function AccountDashboard() {
 
   if (loading || !user) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#FAF7F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '8px' }} />
+      <div style={{ minHeight: '100vh', backgroundColor: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '6px' }} />
       </div>
     );
   }
@@ -100,39 +91,29 @@ export default function AccountDashboard() {
     .reduce((s, o) => s + o.order_items.reduce((a, i) => a + i.quantity, 0), 0);
 
   const recentOrders = myOrders.slice(0, 5);
-
   const firstName = user.name ? user.name.split(' ')[0] : 'Reader';
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh', padding: '40px 24px' }}>
+    <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
         <AccountSidebar />
 
         <main style={{ flex: 1, minWidth: 0 }}>
           {/* Welcome header */}
-          <div className="animate-fadeInUp" style={{ marginBottom: '32px' }}>
-            <p style={{ color: '#8B4513', fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '600' }}>
-              Your Reading World
+          <div className="animate-fadeInUp" style={{ marginBottom: '28px' }}>
+            <p style={{ color: '#C82333', fontSize: '12px', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '700' }}>
+              Your Account
             </p>
-            <h1
-              style={{
-                fontFamily: 'var(--font-playfair), serif',
-                fontSize: '36px',
-                fontWeight: '700',
-                color: '#1a1a1a',
-                lineHeight: '1.2',
-                marginBottom: '6px',
-              }}
-            >
+            <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1C1C1C', lineHeight: '1.2', marginBottom: '4px', letterSpacing: '-0.02em' }}>
               Welcome back, {firstName}.
             </h1>
-            <p style={{ color: '#9A8E85', fontSize: '15px' }}>
+            <p style={{ color: '#6B7280', fontSize: '14px' }}>
               Here&apos;s what&apos;s been happening with your orders.
             </p>
           </div>
 
           {/* Stats row */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '36px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '28px', flexWrap: 'wrap' }}>
             <StatCard value={String(myOrders.length)} label="Total Orders" delay="delay-100" icon="📦" />
             <StatCard value={`₹${totalSpent.toLocaleString('en-IN')}`} label="Amount Spent" delay="delay-200" icon="💳" />
             <StatCard value={String(booksRead)} label="Books Received" delay="delay-300" icon="📚" />
@@ -142,36 +123,28 @@ export default function AccountDashboard() {
           {/* Recent orders */}
           <div
             className="animate-fadeInUp delay-300"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #E8E0D5',
-              borderRadius: '20px',
-              overflow: 'hidden',
-              marginBottom: '24px',
-            }}
+            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}
           >
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid #E8E0D5', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h2 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '18px', fontWeight: '600', color: '#1a1a1a' }}>
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.01em' }}>
                 Recent Orders
               </h2>
-              <Link href="/account/orders" style={{ fontSize: '13px', color: '#2D5016', fontWeight: '600', textDecoration: 'none' }}>
+              <Link href="/account/orders" style={{ fontSize: '13px', color: '#C82333', fontWeight: '600', textDecoration: 'none' }}>
                 View all →
               </Link>
             </div>
 
             {fetching ? (
-              <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="skeleton" style={{ height: '52px', borderRadius: '10px' }} />
+                  <div key={i} className="skeleton" style={{ height: '48px', borderRadius: '6px' }} />
                 ))}
               </div>
             ) : recentOrders.length === 0 ? (
               <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-                <div style={{ fontSize: '40px', marginBottom: '12px' }}>📖</div>
-                <p style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '18px', color: '#1a1a1a', marginBottom: '6px' }}>
-                  No orders yet
-                </p>
-                <p style={{ color: '#9A8E85', fontSize: '14px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '36px', marginBottom: '10px' }}>📖</div>
+                <p style={{ fontSize: '16px', fontWeight: '600', color: '#1C1C1C', marginBottom: '4px' }}>No orders yet</p>
+                <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '18px' }}>
                   Your reading journey starts with the first book.
                 </p>
                 <Link
@@ -179,11 +152,11 @@ export default function AccountDashboard() {
                   style={{
                     display: 'inline-block',
                     padding: '10px 24px',
-                    backgroundColor: '#2D5016',
-                    color: 'white',
+                    backgroundColor: '#C82333',
+                    color: '#FFFFFF',
                     borderRadius: '100px',
-                    fontSize: '14px',
-                    fontWeight: '600',
+                    fontSize: '13px',
+                    fontWeight: '700',
                     textDecoration: 'none',
                   }}
                 >
@@ -192,19 +165,19 @@ export default function AccountDashboard() {
               </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#FAF7F2' }}>
+                    <tr style={{ backgroundColor: '#F8F9FA' }}>
                       {['Order', 'Date', 'Books', 'Total', 'Status'].map((h) => (
                         <th
                           key={h}
                           style={{
-                            padding: '12px 24px',
+                            padding: '10px 20px',
                             textAlign: 'left',
-                            color: '#9A8E85',
-                            fontWeight: '600',
-                            fontSize: '12px',
-                            letterSpacing: '0.8px',
+                            color: '#6B7280',
+                            fontWeight: '700',
+                            fontSize: '11px',
+                            letterSpacing: '0.7px',
                             textTransform: 'uppercase',
                           }}
                         >
@@ -221,19 +194,19 @@ export default function AccountDashboard() {
                       return (
                         <tr
                           key={order.id}
-                          style={{ borderTop: idx === 0 ? 'none' : '1px solid #F0EBE3', cursor: 'pointer', transition: 'background-color 0.15s' }}
+                          style={{ borderTop: '1px solid #F3F4F6', cursor: 'pointer', transition: 'background-color 0.1s' }}
                           onClick={() => router.push(`/account/orders/${order.id}`)}
-                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FAF7F2'; }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FFF5F5'; }}
                           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
                         >
-                          <td style={{ padding: '14px 24px', fontFamily: 'monospace', fontSize: '12px', color: '#9A8E85' }}>
+                          <td style={{ padding: '13px 20px', fontFamily: 'monospace', fontSize: '11px', color: '#6B7280' }}>
                             #{order.id.slice(0, 8).toUpperCase()}
                           </td>
-                          <td style={{ padding: '14px 24px', color: '#5A5048' }}>{date}</td>
-                          <td style={{ padding: '14px 24px', color: '#5A5048' }}>{bookCount} book{bookCount !== 1 ? 's' : ''}</td>
-                          <td style={{ padding: '14px 24px', fontWeight: '600', color: '#2D5016' }}>₹{order.total_amount.toLocaleString('en-IN')}</td>
-                          <td style={{ padding: '14px 24px' }}>
-                            <span style={{ backgroundColor: sc.bg, color: sc.text, padding: '3px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: '600' }}>
+                          <td style={{ padding: '13px 20px', color: '#374151' }}>{date}</td>
+                          <td style={{ padding: '13px 20px', color: '#374151' }}>{bookCount} book{bookCount !== 1 ? 's' : ''}</td>
+                          <td style={{ padding: '13px 20px', fontWeight: '700', color: '#1C1C1C' }}>₹{order.total_amount.toLocaleString('en-IN')}</td>
+                          <td style={{ padding: '13px 20px' }}>
+                            <span style={{ backgroundColor: sc.bg, color: sc.text, padding: '3px 9px', borderRadius: '100px', fontSize: '11px', fontWeight: '700' }}>
                               {order.status}
                             </span>
                           </td>
@@ -247,7 +220,7 @@ export default function AccountDashboard() {
           </div>
 
           {/* Quick links */}
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             {[
               { href: '/account/profile', label: 'Edit Profile', desc: 'Update your name, phone, address', icon: '✏️' },
               { href: '/account/settings', label: 'Preferences', desc: 'Notifications & privacy settings', icon: '🔧' },
@@ -260,17 +233,20 @@ export default function AccountDashboard() {
                   animationDelay: `${0.4 + i * 0.1}s`,
                   flex: '1',
                   minWidth: '200px',
-                  backgroundColor: 'white',
-                  border: '1px solid #E8E0D5',
-                  borderRadius: '16px',
-                  padding: '20px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '8px',
+                  padding: '18px 20px',
                   textDecoration: 'none',
                   display: 'block',
+                  transition: 'border-color 0.15s',
                 }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#C82333'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#E5E7EB'; }}
               >
-                <div style={{ fontSize: '22px', marginBottom: '8px' }}>{icon}</div>
-                <p style={{ fontWeight: '600', color: '#1a1a1a', fontSize: '15px', marginBottom: '3px' }}>{label}</p>
-                <p style={{ color: '#9A8E85', fontSize: '13px' }}>{desc}</p>
+                <div style={{ fontSize: '20px', marginBottom: '8px' }}>{icon}</div>
+                <p style={{ fontWeight: '700', color: '#1C1C1C', fontSize: '14px', marginBottom: '3px' }}>{label}</p>
+                <p style={{ color: '#6B7280', fontSize: '12px' }}>{desc}</p>
               </Link>
             ))}
           </div>

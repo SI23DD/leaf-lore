@@ -1,5 +1,5 @@
 'use client';
-import { useCart } from '@/context/CartContext';
+import { useCart } from '@frontend/context/CartContext';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -29,7 +29,7 @@ export default function CartPage() {
 
   if (orderDone) {
     return (
-      <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#FAF7F2' }}>
+      <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#ffffff' }}>
         <div className="text-center max-w-md">
           {/* Animated checkmark */}
           <div className="flex items-center justify-center mb-8">
@@ -37,7 +37,7 @@ export default function CartPage() {
               width: 88,
               height: 88,
               borderRadius: '50%',
-              backgroundColor: '#2D5016',
+              backgroundColor: '#C82333',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -58,7 +58,7 @@ export default function CartPage() {
                 <polyline
                   points="10,28 22,40 42,16"
                   fill="none"
-                  stroke="#FAF7F2"
+                  stroke="#ffffff"
                   strokeWidth="4.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -69,12 +69,12 @@ export default function CartPage() {
               </svg>
             </div>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#2D5016', opacity: 0, animationFillMode: 'forwards' }} className="text-3xl font-bold mb-4 animate-fadeInUp delay-200">Order Placed!</h2>
+          <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333', opacity: 0, animationFillMode: 'forwards' }} className="text-3xl font-bold mb-4 animate-fadeInUp delay-200">Order Placed!</h2>
           <p className="text-gray-500 mb-2 animate-fadeInUp delay-300" style={{ opacity: 0, animationFillMode: 'forwards' }}>Thank you for your order.</p>
           <p className="text-xs text-gray-400 mb-8 font-mono break-all animate-fadeInUp delay-400" style={{ opacity: 0, animationFillMode: 'forwards' }}>Order ID: {orderDone}</p>
           <Link href="/shop"
             className="inline-block px-8 py-3 rounded-full font-medium transition-all hover:scale-105 animate-fadeInUp delay-500"
-            style={{ backgroundColor: '#2D5016', color: 'white', opacity: 0, animationFillMode: 'forwards' }}>
+            style={{ backgroundColor: '#C82333', color: 'white', opacity: 0, animationFillMode: 'forwards' }}>
             Continue Shopping
           </Link>
         </div>
@@ -84,17 +84,17 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#FAF7F2' }}>
+      <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#ffffff' }}>
         <div className="text-center">
           <div className="text-6xl mb-6">📚</div>
-          <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#2D5016' }} className="text-3xl font-bold mb-4">
+          <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-3xl font-bold mb-4">
             Your cart is empty
           </h2>
           <p className="text-gray-500 mb-8">Looks like you haven&apos;t added any books yet.</p>
           <Link
             href="/shop"
             className="inline-block px-8 py-3 rounded-full font-medium transition-all duration-200 hover:scale-105"
-            style={{ backgroundColor: '#2D5016', color: 'white' }}
+            style={{ backgroundColor: '#C82333', color: 'white' }}
           >
             Explore Books
           </Link>
@@ -130,9 +130,9 @@ export default function CartPage() {
   }
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2' }} className="min-h-screen animate-fadeIn">
+    <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen animate-fadeIn">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#2D5016' }} className="text-4xl font-bold mb-2">
+        <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-4xl font-bold mb-2">
           Your Cart
         </h1>
         <p className="text-gray-500 mb-8">{totalItems} item{totalItems !== 1 ? 's' : ''}</p>
@@ -148,7 +148,7 @@ export default function CartPage() {
                   className={`rounded-2xl p-5 flex gap-5 items-center animate-fadeInUp ${itemDelays[Math.min(idx, itemDelays.length - 1)]}`}
                   style={{
                     backgroundColor: 'white',
-                    border: '1px solid #E8E0D5',
+                    border: '1px solid #e5e5e5',
                     opacity: isRemoving ? 0 : 0,
                     transform: isRemoving ? 'translateX(32px)' : undefined,
                     transition: isRemoving ? 'opacity 0.3s ease, transform 0.3s ease' : undefined,
@@ -169,7 +169,7 @@ export default function CartPage() {
                       style={{ fontFamily: 'var(--font-playfair), serif', color: '#1a1a1a' }}>
                       {book.title}
                     </h3>
-                    <p className="text-sm mb-1" style={{ color: '#8B4513' }}>{book.author}</p>
+                    <p className="text-sm mb-1" style={{ color: '#666666' }}>{book.author}</p>
                     <p className="text-xs text-gray-400">{book.language} · {book.genre}</p>
                   </div>
 
@@ -178,19 +178,19 @@ export default function CartPage() {
                     <button
                       onClick={() => updateQuantity(book.id, quantity - 1)}
                       className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-150 hover:opacity-70 active:scale-90"
-                      style={{ backgroundColor: '#F0EBE3', color: '#2D5016' }}
+                      style={{ backgroundColor: '#f5f5f5', color: '#C82333' }}
                     >−</button>
                     <span className="w-6 text-center text-sm font-medium">{quantity}</span>
                     <button
                       onClick={() => updateQuantity(book.id, quantity + 1)}
                       className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-150 hover:opacity-70 active:scale-90"
-                      style={{ backgroundColor: '#2D5016', color: 'white' }}
+                      style={{ backgroundColor: '#C82333', color: 'white' }}
                     >+</button>
                   </div>
 
                   {/* Price + remove */}
                   <div className="text-right shrink-0">
-                    <p className="font-bold transition-colors duration-200" style={{ color: '#2D5016' }}>₹{book.price * quantity}</p>
+                    <p className="font-bold transition-colors duration-200" style={{ color: '#C82333' }}>₹{book.price * quantity}</p>
                     <p className="text-xs text-gray-400">₹{book.price} each</p>
                     <button
                       onClick={() => handleRemove(book.id)}
@@ -206,8 +206,8 @@ export default function CartPage() {
 
           {/* Order Summary — fadeInRight */}
           <div className="lg:col-span-1 animate-fadeInRight delay-200" style={{ opacity: 0, animationFillMode: 'forwards' }}>
-            <div className="rounded-2xl p-6 sticky top-24" style={{ backgroundColor: 'white', border: '1px solid #E8E0D5' }}>
-              <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#2D5016' }} className="text-xl font-bold mb-6">
+            <div className="rounded-2xl p-6 sticky top-24" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
+              <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-xl font-bold mb-6">
                 Order Summary
               </h2>
 
@@ -218,16 +218,16 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
-                  <span className="font-medium" style={{ color: shipping === 0 ? '#2D5016' : '#1a1a1a' }}>
+                  <span className="font-medium" style={{ color: shipping === 0 ? '#C82333' : '#1a1a1a' }}>
                     {shipping === 0 ? 'Free 🎉' : `₹${shipping}`}
                   </span>
                 </div>
                 {shipping > 0 && (
                   <p className="text-xs text-gray-400">Add ₹{500 - totalPrice} more for free shipping</p>
                 )}
-                <div className="border-t pt-3 flex justify-between font-bold text-base" style={{ borderColor: '#E8E0D5' }}>
+                <div className="border-t pt-3 flex justify-between font-bold text-base" style={{ borderColor: '#e5e5e5' }}>
                   <span>Total</span>
-                  <span style={{ color: '#2D5016' }}>₹{total}</span>
+                  <span style={{ color: '#C82333' }}>₹{total}</span>
                 </div>
               </div>
 
@@ -239,9 +239,9 @@ export default function CartPage() {
                     onChange={e => setCheckoutForm(p => ({ ...p, name: e.target.value }))}
                     placeholder="Your name"
                     className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
                   />
                   <input
                     required
@@ -250,14 +250,14 @@ export default function CartPage() {
                     onChange={e => setCheckoutForm(p => ({ ...p, email: e.target.value }))}
                     placeholder="Email address"
                     className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #E8E0D5', backgroundColor: '#FAF7F2' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #2D5016'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(45,80,22,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #E8E0D5'; e.currentTarget.style.boxShadow = 'none'; }}
+                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
                   />
                   {error && <p className="text-xs text-red-500">{error}</p>}
                   <button type="submit" disabled={placing}
                     className="w-full py-3 rounded-full font-semibold text-sm transition-all hover:opacity-90 disabled:opacity-60 active:scale-95"
-                    style={{ backgroundColor: '#2D5016', color: 'white' }}>
+                    style={{ backgroundColor: '#C82333', color: 'white' }}>
                     {placing ? 'Placing Order…' : 'Confirm Order'}
                   </button>
                   <button type="button" onClick={() => setShowForm(false)}
@@ -266,16 +266,16 @@ export default function CartPage() {
               ) : (
                 <button onClick={() => setShowForm(true)}
                   className="w-full py-3.5 rounded-full font-semibold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 mb-3"
-                  style={{ backgroundColor: '#2D5016', color: 'white' }}>
+                  style={{ backgroundColor: '#C82333', color: 'white' }}>
                   Proceed to Checkout
                 </button>
               )}
 
-              <Link href="/shop" className="block text-center text-sm hover:underline transition-opacity duration-200 hover:opacity-70" style={{ color: '#8B4513' }}>
+              <Link href="/shop" className="block text-center text-sm hover:underline transition-opacity duration-200 hover:opacity-70" style={{ color: '#666666' }}>
                 ← Continue Shopping
               </Link>
 
-              <div className="mt-4 p-3 rounded-lg text-xs text-center" style={{ backgroundColor: '#F0EBE3', color: '#7A9E7E' }}>
+              <div className="mt-4 p-3 rounded-lg text-xs text-center" style={{ backgroundColor: '#f5f5f5', color: '#7A9E7E' }}>
                 🔒 Secure checkout · Free returns · 7-day policy
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@backend/lib/supabaseAdmin';
 
 // POST /api/auth/register
 export async function POST(req: NextRequest) {

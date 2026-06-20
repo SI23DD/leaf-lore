@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@backend/lib/supabase';
+import { supabaseAdmin } from '@backend/lib/supabaseAdmin';
 
 // POST /api/auth/login
 export async function POST(req: NextRequest) {

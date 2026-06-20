@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@backend/lib/supabaseAdmin';
 
 // GET /api/orders/[id]
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

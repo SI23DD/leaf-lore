@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import AccountSidebar from '@/components/AccountSidebar';
+import { useAuth } from '@frontend/context/AuthContext';
+import AccountSidebar from '@frontend/components/AccountSidebar';
 
 function getInitials(name: string) {
   return name
@@ -13,7 +13,7 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-const AVATAR_COLORS = ['#2D5016', '#8B4513', '#4A7C59', '#7B5B3A', '#3D6B2C', '#9B6B3A'];
+const AVATAR_COLORS = ['#C82333', '#A71D2A', '#991B1B', '#7F1D1D', '#B91C1C', '#DC2626'];
 function avatarColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -74,8 +74,8 @@ export default function ProfilePage() {
 
   if (loading || !user) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#FAF7F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '8px' }} />
+      <div style={{ minHeight: '100vh', backgroundColor: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '6px' }} />
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function ProfilePage() {
   const bgColor = avatarColor(form.name || user.email);
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh', padding: '40px 24px' }}>
+    <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       {/* Toast */}
       {toast && (
         <div
@@ -95,13 +95,13 @@ export default function ProfilePage() {
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1000,
-            backgroundColor: toast.type === 'success' ? '#2D5016' : '#991B1B',
-            color: 'white',
-            padding: '12px 24px',
+            backgroundColor: toast.type === 'success' ? '#28A745' : '#C82333',
+            color: '#FFFFFF',
+            padding: '11px 22px',
             borderRadius: '100px',
-            fontSize: '14px',
-            fontWeight: '600',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            fontSize: '13px',
+            fontWeight: '700',
+            boxShadow: '0 6px 24px rgba(0,0,0,0.14)',
             whiteSpace: 'nowrap',
           }}
         >
@@ -113,11 +113,11 @@ export default function ProfilePage() {
         <AccountSidebar />
 
         <main style={{ flex: 1, minWidth: 0 }}>
-          <div className="animate-fadeInUp" style={{ marginBottom: '28px' }}>
-            <p style={{ color: '#8B4513', fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '600' }}>
-              Your Identity
+          <div className="animate-fadeInUp" style={{ marginBottom: '24px' }}>
+            <p style={{ color: '#C82333', fontSize: '12px', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '700' }}>
+              Your Account
             </p>
-            <h1 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '32px', fontWeight: '700', color: '#1a1a1a' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.02em' }}>
               My Profile
             </h1>
           </div>
@@ -126,59 +126,48 @@ export default function ProfilePage() {
           <div
             className="animate-fadeInUp delay-100"
             style={{
-              backgroundColor: 'white',
-              border: '1px solid #E8E0D5',
-              borderRadius: '20px',
-              padding: '28px 32px',
-              marginBottom: '20px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E5E7EB',
+              borderRadius: '8px',
+              padding: '24px 28px',
+              marginBottom: '16px',
               display: 'flex',
               alignItems: 'center',
-              gap: '24px',
+              gap: '20px',
               flexWrap: 'wrap',
             }}
           >
-            <div style={{ position: 'relative', flexShrink: 0 }}>
-              <div
-                style={{
-                  width: '88px',
-                  height: '88px',
-                  borderRadius: '50%',
-                  backgroundColor: bgColor,
-                  color: 'white',
-                  fontFamily: 'var(--font-playfair), serif',
-                  fontSize: '32px',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 6px 24px rgba(45,80,22,0.25)',
-                  letterSpacing: '1px',
-                }}
-              >
-                {initials}
-              </div>
+            <div
+              style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                backgroundColor: bgColor,
+                color: '#FFFFFF',
+                fontSize: '28px',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                letterSpacing: '1px',
+              }}
+            >
+              {initials}
             </div>
             <div style={{ flex: 1 }}>
-              <p
-                style={{
-                  fontFamily: 'var(--font-playfair), serif',
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  color: '#1a1a1a',
-                  marginBottom: '3px',
-                }}
-              >
+              <p style={{ fontSize: '18px', fontWeight: '700', color: '#1C1C1C', marginBottom: '2px', letterSpacing: '-0.01em' }}>
                 {form.name || user.name}
               </p>
-              <p style={{ color: '#9A8E85', fontSize: '14px', marginBottom: '12px' }}>{user.email}</p>
+              <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '10px' }}>{user.email}</p>
               <button
                 style={{
-                  padding: '7px 18px',
+                  padding: '6px 16px',
                   borderRadius: '100px',
-                  border: '1.5px solid #E8E0D5',
+                  border: '1.5px solid #E5E7EB',
                   backgroundColor: 'transparent',
-                  color: '#9A8E85',
-                  fontSize: '13px',
+                  color: '#9CA3AF',
+                  fontSize: '12px',
                   cursor: 'not-allowed',
                   opacity: 0.6,
                 }}
@@ -194,30 +183,22 @@ export default function ProfilePage() {
           <div
             className="animate-fadeInUp delay-200"
             style={{
-              backgroundColor: 'white',
-              border: '1px solid #E8E0D5',
-              borderRadius: '20px',
-              padding: '28px 32px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E5E7EB',
+              borderRadius: '8px',
+              padding: '24px 28px',
             }}
           >
-            <h2
-              style={{
-                fontFamily: 'var(--font-playfair), serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                color: '#1a1a1a',
-                marginBottom: '24px',
-              }}
-            >
+            <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#1C1C1C', marginBottom: '20px', letterSpacing: '-0.01em' }}>
               Personal Information
             </h2>
 
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               {/* Name */}
               <div>
                 <label
                   htmlFor="name"
-                  style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#5A5048', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '7px' }}
+                  style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#374151', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '6px' }}
                 >
                   Full Name
                 </label>
@@ -229,17 +210,18 @@ export default function ProfilePage() {
                   placeholder="Your full name"
                   style={{
                     width: '100%',
-                    padding: '11px 16px',
-                    borderRadius: '10px',
-                    border: '1.5px solid #E8E0D5',
-                    backgroundColor: '#FAF7F2',
+                    padding: '10px 14px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #E5E7EB',
+                    backgroundColor: '#F9FAFB',
                     fontSize: '14px',
-                    color: '#1a1a1a',
+                    color: '#1C1C1C',
                     outline: 'none',
-                    transition: 'border-color 0.2s',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
+                    boxSizing: 'border-box',
                   }}
-                  onFocus={(e) => { e.target.style.borderColor = '#2D5016'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#E8E0D5'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#C82333'; e.target.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; e.target.style.backgroundColor = '#FFFFFF'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; e.target.style.backgroundColor = '#F9FAFB'; }}
                 />
               </div>
 
@@ -247,7 +229,7 @@ export default function ProfilePage() {
               <div>
                 <label
                   htmlFor="email"
-                  style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#5A5048', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '7px' }}
+                  style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#374151', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '6px' }}
                 >
                   Email Address
                 </label>
@@ -258,17 +240,18 @@ export default function ProfilePage() {
                   readOnly
                   style={{
                     width: '100%',
-                    padding: '11px 16px',
-                    borderRadius: '10px',
-                    border: '1.5px solid #E8E0D5',
-                    backgroundColor: '#F5F0EB',
+                    padding: '10px 14px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #E5E7EB',
+                    backgroundColor: '#F3F4F6',
                     fontSize: '14px',
-                    color: '#9A8E85',
+                    color: '#9CA3AF',
                     outline: 'none',
                     cursor: 'not-allowed',
+                    boxSizing: 'border-box',
                   }}
                 />
-                <p style={{ fontSize: '12px', color: '#B0A89E', marginTop: '5px' }}>
+                <p style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '4px' }}>
                   Email cannot be changed after registration.
                 </p>
               </div>
@@ -277,7 +260,7 @@ export default function ProfilePage() {
               <div>
                 <label
                   htmlFor="phone"
-                  style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#5A5048', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '7px' }}
+                  style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#374151', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '6px' }}
                 >
                   Phone Number
                 </label>
@@ -289,17 +272,18 @@ export default function ProfilePage() {
                   placeholder="+91 98765 43210"
                   style={{
                     width: '100%',
-                    padding: '11px 16px',
-                    borderRadius: '10px',
-                    border: '1.5px solid #E8E0D5',
-                    backgroundColor: '#FAF7F2',
+                    padding: '10px 14px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #E5E7EB',
+                    backgroundColor: '#F9FAFB',
                     fontSize: '14px',
-                    color: '#1a1a1a',
+                    color: '#1C1C1C',
                     outline: 'none',
-                    transition: 'border-color 0.2s',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
+                    boxSizing: 'border-box',
                   }}
-                  onFocus={(e) => { e.target.style.borderColor = '#2D5016'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#E8E0D5'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#C82333'; e.target.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; e.target.style.backgroundColor = '#FFFFFF'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; e.target.style.backgroundColor = '#F9FAFB'; }}
                 />
               </div>
 
@@ -307,7 +291,7 @@ export default function ProfilePage() {
               <div>
                 <label
                   htmlFor="address"
-                  style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#5A5048', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '7px' }}
+                  style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#374151', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '6px' }}
                 >
                   Delivery Address
                 </label>
@@ -319,19 +303,20 @@ export default function ProfilePage() {
                   rows={3}
                   style={{
                     width: '100%',
-                    padding: '11px 16px',
-                    borderRadius: '10px',
-                    border: '1.5px solid #E8E0D5',
-                    backgroundColor: '#FAF7F2',
+                    padding: '10px 14px',
+                    borderRadius: '6px',
+                    border: '1.5px solid #E5E7EB',
+                    backgroundColor: '#F9FAFB',
                     fontSize: '14px',
-                    color: '#1a1a1a',
+                    color: '#1C1C1C',
                     outline: 'none',
                     resize: 'vertical',
-                    fontFamily: 'var(--font-lato), sans-serif',
-                    transition: 'border-color 0.2s',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
+                    boxSizing: 'border-box',
                   }}
-                  onFocus={(e) => { e.target.style.borderColor = '#2D5016'; }}
-                  onBlur={(e) => { e.target.style.borderColor = '#E8E0D5'; }}
+                  onFocus={(e) => { e.target.style.borderColor = '#C82333'; e.target.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; e.target.style.backgroundColor = '#FFFFFF'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; e.target.style.backgroundColor = '#F9FAFB'; }}
                 />
               </div>
 
@@ -340,18 +325,20 @@ export default function ProfilePage() {
                   type="submit"
                   disabled={saving}
                   style={{
-                    padding: '12px 32px',
-                    backgroundColor: saving ? '#7A9E7E' : '#2D5016',
-                    color: 'white',
+                    padding: '11px 28px',
+                    backgroundColor: saving ? '#E5E7EB' : '#C82333',
+                    color: saving ? '#6B7280' : '#FFFFFF',
                     borderRadius: '100px',
                     border: 'none',
-                    fontSize: '14px',
-                    fontWeight: '600',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    letterSpacing: '0.05em',
                     cursor: saving ? 'not-allowed' : 'pointer',
-                    transition: 'background-color 0.2s, transform 0.15s',
+                    transition: 'background-color 0.15s',
+                    textTransform: 'uppercase',
                   }}
-                  onMouseEnter={(e) => { if (!saving) (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
+                  onMouseEnter={(e) => { if (!saving) (e.currentTarget as HTMLElement).style.backgroundColor = '#A71D2A'; }}
+                  onMouseLeave={(e) => { if (!saving) (e.currentTarget as HTMLElement).style.backgroundColor = '#C82333'; }}
                 >
                   {saving ? 'Saving…' : 'Save Changes'}
                 </button>

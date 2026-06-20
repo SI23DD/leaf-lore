@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import AccountSidebar from '@/components/AccountSidebar';
+import { useAuth } from '@frontend/context/AuthContext';
+import AccountSidebar from '@frontend/components/AccountSidebar';
 
 interface Book {
   title: string;
@@ -31,14 +31,6 @@ interface Order {
 
 const STATUSES = ['Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
 
-const NORMALISED_STATUS_MAP: Record<string, string> = {
-  Pending: 'Pending',
-  Processing: 'Processing',
-  Shipped: 'Shipped',
-  Delivered: 'Delivered',
-  Cancelled: 'Cancelled',
-};
-
 const STEP_META: Record<string, { icon: string; description: string }> = {
   Pending:             { icon: '🛒', description: 'We received your order and are preparing it.' },
   Processing:          { icon: '📋', description: 'Your books are being picked and packed.' },
@@ -48,7 +40,6 @@ const STEP_META: Record<string, { icon: string; description: string }> = {
 };
 
 function getActiveStep(status: string): number {
-  // Map DB statuses to timeline index
   const map: Record<string, number> = {
     Pending: 0,
     Processing: 1,
@@ -95,8 +86,8 @@ export default function OrderDetailPage() {
 
   if (loading || !user) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#FAF7F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '8px' }} />
+      <div style={{ minHeight: '100vh', backgroundColor: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="skeleton" style={{ width: '120px', height: '20px', borderRadius: '6px' }} />
       </div>
     );
   }
@@ -111,7 +102,7 @@ export default function OrderDetailPage() {
   const shipping = order && order.total_amount < 500 ? 50 : 0;
 
   return (
-    <div style={{ backgroundColor: '#FAF7F2', minHeight: '100vh', padding: '40px 24px' }}>
+    <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
         <AccountSidebar />
 
@@ -123,58 +114,51 @@ export default function OrderDetailPage() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
-              color: '#8B4513',
+              gap: '5px',
+              color: '#C82333',
               fontSize: '13px',
               fontWeight: '600',
               textDecoration: 'none',
-              marginBottom: '20px',
+              marginBottom: '18px',
             }}
           >
             ← Back to Orders
           </Link>
 
           {fetching ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton" style={{ height: '140px', borderRadius: '16px' }} />
+                <div key={i} className="skeleton" style={{ height: '130px', borderRadius: '8px' }} />
               ))}
             </div>
           ) : error || !order ? (
             <div style={{ textAlign: 'center', padding: '60px 0' }}>
-              <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔍</div>
-              <p style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '20px', color: '#1a1a1a', marginBottom: '8px' }}>
+              <div style={{ fontSize: '40px', marginBottom: '10px' }}>🔍</div>
+              <p style={{ fontSize: '18px', fontWeight: '600', color: '#1C1C1C', marginBottom: '6px' }}>
                 {error || 'Order not found'}
               </p>
-              <Link href="/account/orders" style={{ color: '#2D5016', fontWeight: '600', textDecoration: 'none' }}>
+              <Link href="/account/orders" style={{ color: '#C82333', fontWeight: '600', textDecoration: 'none' }}>
                 View all orders
               </Link>
             </div>
           ) : (
             <>
               {/* Header */}
-              <div className="animate-fadeInUp" style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                  <h1
-                    style={{
-                      fontFamily: 'var(--font-playfair), serif',
-                      fontSize: '28px',
-                      fontWeight: '700',
-                      color: '#1a1a1a',
-                    }}
-                  >
+              <div className="animate-fadeInUp" style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                  <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.02em' }}>
                     Order #{order.id.slice(0, 8).toUpperCase()}
                   </h1>
                   {(() => {
                     const sc = STATUS_COLORS[order.status] || STATUS_COLORS.Pending;
                     return (
-                      <span style={{ backgroundColor: sc.bg, color: sc.text, padding: '4px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: '600' }}>
+                      <span style={{ backgroundColor: sc.bg, color: sc.text, padding: '3px 11px', borderRadius: '100px', fontSize: '12px', fontWeight: '700' }}>
                         {order.status}
                       </span>
                     );
                   })()}
                 </div>
-                <p style={{ color: '#9A8E85', fontSize: '14px' }}>Placed on {date}</p>
+                <p style={{ color: '#6B7280', fontSize: '13px' }}>Placed on {date}</p>
               </div>
 
               {/* Tracking Timeline */}
@@ -182,46 +166,38 @@ export default function OrderDetailPage() {
                 <div
                   className="animate-fadeInUp delay-100"
                   style={{
-                    backgroundColor: 'white',
-                    border: '1px solid #E8E0D5',
-                    borderRadius: '20px',
-                    padding: '28px 32px',
-                    marginBottom: '24px',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    padding: '24px 28px',
+                    marginBottom: '20px',
                   }}
                 >
-                  <h2
-                    style={{
-                      fontFamily: 'var(--font-playfair), serif',
-                      fontSize: '18px',
-                      fontWeight: '600',
-                      color: '#1a1a1a',
-                      marginBottom: '28px',
-                    }}
-                  >
+                  <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#1C1C1C', marginBottom: '24px', letterSpacing: '-0.01em' }}>
                     Track Your Order
                   </h2>
 
                   <div style={{ position: 'relative', paddingLeft: '36px' }}>
-                    {/* Vertical line */}
+                    {/* Gray track line */}
                     <div
                       style={{
                         position: 'absolute',
-                        left: '13px',
-                        top: '16px',
-                        bottom: '16px',
+                        left: '12px',
+                        top: '14px',
+                        bottom: '14px',
                         width: '2px',
-                        backgroundColor: '#E8E0D5',
+                        backgroundColor: '#E5E7EB',
                       }}
                     />
-                    {/* Progress line */}
+                    {/* Red progress line */}
                     <div
                       style={{
                         position: 'absolute',
-                        left: '13px',
-                        top: '16px',
+                        left: '12px',
+                        top: '14px',
                         width: '2px',
                         height: `${Math.min(activeStep / (STATUSES.length - 1), 1) * 100}%`,
-                        backgroundColor: '#2D5016',
+                        backgroundColor: '#C82333',
                         transition: 'height 0.8s ease',
                       }}
                     />
@@ -234,13 +210,13 @@ export default function OrderDetailPage() {
                       return (
                         <div
                           key={step}
-                          className={`animate-fadeInLeft`}
+                          className="animate-fadeInLeft"
                           style={{
-                            animationDelay: `${0.15 + idx * 0.1}s`,
+                            animationDelay: `${0.12 + idx * 0.09}s`,
                             display: 'flex',
-                            gap: '16px',
+                            gap: '14px',
                             alignItems: 'flex-start',
-                            marginBottom: idx < STATUSES.length - 1 ? '28px' : '0',
+                            marginBottom: idx < STATUSES.length - 1 ? '24px' : '0',
                             position: 'relative',
                           }}
                         >
@@ -250,54 +226,50 @@ export default function OrderDetailPage() {
                               position: 'absolute',
                               left: '-36px',
                               top: '0',
-                              width: '28px',
-                              height: '28px',
+                              width: '26px',
+                              height: '26px',
                               borderRadius: '50%',
-                              backgroundColor: isDone ? '#2D5016' : 'white',
-                              border: `2px solid ${isDone ? '#2D5016' : '#D4C9BE'}`,
+                              backgroundColor: isDone ? '#C82333' : '#FFFFFF',
+                              border: `2px solid ${isDone ? '#C82333' : '#D1D5DB'}`,
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              fontSize: '13px',
+                              fontSize: '12px',
+                              color: '#FFFFFF',
+                              fontWeight: '700',
                               flexShrink: 0,
-                              boxShadow: isCurrent ? '0 0 0 4px rgba(45,80,22,0.15)' : 'none',
-                              transition: 'all 0.3s ease',
+                              boxShadow: isCurrent ? '0 0 0 4px rgba(200,35,51,0.15)' : 'none',
+                              transition: 'all 0.25s ease',
                               zIndex: 1,
                             }}
                           >
-                            {isDone ? '✓' : <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#D4C9BE', display: 'block' }} />}
+                            {isDone ? '✓' : <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#D1D5DB', display: 'block' }} />}
                           </div>
 
                           {/* Content */}
                           <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
-                              <span style={{ fontSize: '16px' }}>{meta?.icon}</span>
-                              <span
-                                style={{
-                                  fontWeight: isCurrent ? '700' : '500',
-                                  color: isDone ? '#1a1a1a' : '#C4BAB0',
-                                  fontSize: '14px',
-                                }}
-                              >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '2px' }}>
+                              <span style={{ fontSize: '14px' }}>{meta?.icon}</span>
+                              <span style={{ fontWeight: isCurrent ? '700' : '500', color: isDone ? '#1C1C1C' : '#9CA3AF', fontSize: '13px' }}>
                                 {step}
                               </span>
                               {isCurrent && (
                                 <span
                                   style={{
                                     fontSize: '10px',
-                                    backgroundColor: '#EDF4E8',
-                                    color: '#2D5016',
-                                    padding: '2px 8px',
+                                    backgroundColor: '#FEE2E2',
+                                    color: '#C82333',
+                                    padding: '2px 7px',
                                     borderRadius: '100px',
                                     fontWeight: '700',
-                                    letterSpacing: '0.5px',
+                                    letterSpacing: '0.4px',
                                   }}
                                 >
                                   CURRENT
                                 </span>
                               )}
                             </div>
-                            <p style={{ fontSize: '13px', color: isDone ? '#9A8E85' : '#C4BAB0' }}>
+                            <p style={{ fontSize: '12px', color: isDone ? '#6B7280' : '#9CA3AF' }}>
                               {meta?.description}
                             </p>
                           </div>
@@ -312,20 +284,20 @@ export default function OrderDetailPage() {
                 <div
                   className="animate-fadeInUp delay-100"
                   style={{
-                    backgroundColor: '#FFF5F5',
-                    border: '1px solid #FECACA',
-                    borderRadius: '16px',
-                    padding: '20px 24px',
-                    marginBottom: '24px',
+                    backgroundColor: '#FFF0F0',
+                    border: '1px solid #FECDD3',
+                    borderRadius: '8px',
+                    padding: '18px 22px',
+                    marginBottom: '20px',
                     display: 'flex',
                     gap: '12px',
                     alignItems: 'center',
                   }}
                 >
-                  <span style={{ fontSize: '24px' }}>❌</span>
+                  <span style={{ fontSize: '20px' }}>❌</span>
                   <div>
-                    <p style={{ fontWeight: '600', color: '#991B1B', marginBottom: '2px' }}>Order Cancelled</p>
-                    <p style={{ fontSize: '13px', color: '#C4BAB0' }}>This order has been cancelled. Contact us if you need help.</p>
+                    <p style={{ fontWeight: '700', color: '#C82333', marginBottom: '2px', fontSize: '14px' }}>Order Cancelled</p>
+                    <p style={{ fontSize: '12px', color: '#6B7280' }}>This order has been cancelled. Contact us if you need help.</p>
                   </div>
                 </div>
               )}
@@ -334,43 +306,43 @@ export default function OrderDetailPage() {
               <div
                 className="animate-fadeInUp delay-200"
                 style={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E8E0D5',
-                  borderRadius: '20px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '8px',
                   overflow: 'hidden',
-                  marginBottom: '24px',
+                  marginBottom: '20px',
                 }}
               >
-                <div style={{ padding: '20px 24px', borderBottom: '1px solid #E8E0D5' }}>
-                  <h2 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '18px', fontWeight: '600', color: '#1a1a1a' }}>
+                <div style={{ padding: '16px 22px', borderBottom: '1px solid #E5E7EB' }}>
+                  <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.01em' }}>
                     Items in this Order
                   </h2>
                 </div>
 
-                <div style={{ padding: '8px 0' }}>
+                <div style={{ padding: '4px 0' }}>
                   {order.order_items?.map((item, idx) => (
                     <div
                       key={item.id}
                       style={{
                         display: 'flex',
-                        gap: '16px',
+                        gap: '14px',
                         alignItems: 'center',
-                        padding: '14px 24px',
-                        borderTop: idx === 0 ? 'none' : '1px solid #F0EBE3',
+                        padding: '13px 22px',
+                        borderTop: idx === 0 ? 'none' : '1px solid #F3F4F6',
                       }}
                     >
                       {/* Cover swatch */}
                       <div
                         style={{
-                          width: '44px',
-                          height: '56px',
-                          borderRadius: '6px',
-                          backgroundColor: item.book?.cover_color || '#D4C9BE',
+                          width: '40px',
+                          height: '52px',
+                          borderRadius: '4px',
+                          backgroundColor: item.book?.cover_color || '#E5E7EB',
                           flexShrink: 0,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '18px',
+                          fontSize: '16px',
                         }}
                       >
                         📖
@@ -378,10 +350,9 @@ export default function OrderDetailPage() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p
                           style={{
-                            fontFamily: 'var(--font-playfair), serif',
                             fontWeight: '600',
-                            color: '#1a1a1a',
-                            fontSize: '14px',
+                            color: '#1C1C1C',
+                            fontSize: '13px',
                             marginBottom: '2px',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
@@ -391,14 +362,14 @@ export default function OrderDetailPage() {
                           {item.book?.title || 'Unknown Book'}
                         </p>
                         {item.book?.author && (
-                          <p style={{ fontSize: '12px', color: '#8B4513' }}>{item.book.author}</p>
+                          <p style={{ fontSize: '12px', color: '#6B7280' }}>{item.book.author}</p>
                         )}
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <p style={{ fontWeight: '600', color: '#2D5016', fontSize: '15px' }}>
+                        <p style={{ fontWeight: '700', color: '#1C1C1C', fontSize: '14px' }}>
                           ₹{(item.unit_price * item.quantity).toLocaleString('en-IN')}
                         </p>
-                        <p style={{ fontSize: '12px', color: '#9A8E85' }}>
+                        <p style={{ fontSize: '11px', color: '#6B7280' }}>
                           ₹{item.unit_price} × {item.quantity}
                         </p>
                       </div>
@@ -407,30 +378,30 @@ export default function OrderDetailPage() {
                 </div>
 
                 {/* Total breakdown */}
-                <div style={{ padding: '16px 24px', backgroundColor: '#FAF7F2', borderTop: '1px solid #E8E0D5' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#9A8E85', marginBottom: '6px' }}>
+                <div style={{ padding: '14px 22px', backgroundColor: '#F8F9FA', borderTop: '1px solid #E5E7EB' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6B7280', marginBottom: '5px' }}>
                     <span>Subtotal</span>
                     <span>₹{(order.total_amount - shipping).toLocaleString('en-IN')}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#9A8E85', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#6B7280', marginBottom: '10px' }}>
                     <span>Shipping</span>
-                    <span style={{ color: shipping === 0 ? '#2D5016' : '#9A8E85' }}>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
+                    <span style={{ color: shipping === 0 ? '#28A745' : '#6B7280', fontWeight: shipping === 0 ? '600' : '400' }}>
+                      {shipping === 0 ? 'Free' : `₹${shipping}`}
+                    </span>
                   </div>
                   <div
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       fontWeight: '700',
-                      fontSize: '16px',
-                      color: '#1a1a1a',
+                      fontSize: '15px',
+                      color: '#1C1C1C',
                       paddingTop: '10px',
-                      borderTop: '1px solid #E8E0D5',
+                      borderTop: '1px solid #E5E7EB',
                     }}
                   >
                     <span>Total</span>
-                    <span style={{ color: '#2D5016', fontFamily: 'var(--font-playfair), serif' }}>
-                      ₹{order.total_amount.toLocaleString('en-IN')}
-                    </span>
+                    <span>₹{order.total_amount.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
               </div>
@@ -439,10 +410,10 @@ export default function OrderDetailPage() {
               <div
                 className="animate-fadeInUp delay-300"
                 style={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E8E0D5',
-                  borderRadius: '16px',
-                  padding: '20px 24px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '8px',
+                  padding: '18px 22px',
                   display: 'flex',
                   gap: '16px',
                   alignItems: 'center',
@@ -450,26 +421,29 @@ export default function OrderDetailPage() {
                 }}
               >
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontWeight: '600', color: '#1a1a1a', marginBottom: '3px', fontSize: '15px' }}>
+                  <p style={{ fontWeight: '700', color: '#1C1C1C', marginBottom: '2px', fontSize: '14px' }}>
                     Need help with this order?
                   </p>
-                  <p style={{ fontSize: '13px', color: '#9A8E85' }}>
+                  <p style={{ fontSize: '12px', color: '#6B7280' }}>
                     Write to us and we&apos;ll sort it out within 24 hours.
                   </p>
                 </div>
                 <a
                   href="mailto:hello@leafandlore.in"
                   style={{
-                    padding: '10px 22px',
+                    padding: '9px 20px',
                     borderRadius: '100px',
-                    border: '1.5px solid #2D5016',
-                    color: '#2D5016',
+                    border: '1.5px solid #C82333',
+                    color: '#C82333',
                     fontSize: '13px',
-                    fontWeight: '600',
+                    fontWeight: '700',
                     textDecoration: 'none',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
+                    transition: 'background-color 0.15s, color 0.15s',
                   }}
+                  onMouseEnter={(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = '#C82333'; el.style.color = '#FFFFFF'; }}
+                  onMouseLeave={(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'transparent'; el.style.color = '#C82333'; }}
                 >
                   Contact Support
                 </a>

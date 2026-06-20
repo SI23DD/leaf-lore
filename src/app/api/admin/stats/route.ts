@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@backend/lib/supabaseAdmin';
 
 // GET /api/admin/stats — dashboard stats
 export async function GET() {

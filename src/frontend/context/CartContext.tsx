@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Book } from '@/data/books';
+import { Book } from '@frontend/data/books';
 
 interface CartItem {
   book: Book;

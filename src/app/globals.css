@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
 
 @layer base {
   html {
@@ -8,6 +9,11 @@
   }
   * {
     box-sizing: border-box;
+  }
+  body {
+    font-family: 'Poppins', system-ui, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
   }
 }
 
@@ -102,3 +108,33 @@
 .page-enter {
   animation: fadeInUp 0.5s ease forwards;
 }
+
+/* === 99bookstores-style Utility Classes === */
+
+.btn-primary { background: #C82333; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-primary:hover { background: #A71D2A; }
+
+.btn-outline-red { background: white; color: #C82333; border: 1.5px solid #C82333; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-outline-red:hover { background: #C82333; color: white; }
+
+.badge-sale { background: #28A745; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+.badge-soldout { background: #333; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+
+.section-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; }
+
+.view-all-btn { background: #C82333; color: white; border: none; padding: 10px 32px; border-radius: 25px; font-weight: 600; font-size: 14px; cursor: pointer; display: block; margin: 24px auto 0; transition: background 0.2s; }
+.view-all-btn:hover { background: #A71D2A; }
+
+/* Category circle */
+.category-circle { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.category-circle .circle { width: 90px; height: 90px; border-radius: 50%; border: 1.5px solid #ddd; background: white; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, box-shadow 0.2s; }
+.category-circle:hover .circle { border-color: #C82333; box-shadow: 0 2px 12px rgba(200,35,51,0.15); }
+.category-circle span { font-size: 12px; font-weight: 600; margin-top: 8px; text-align: center; color: #1a1a1a; }
+
+/* Announcement bar */
+.announcement-bar { background: #FFC107; color: #1a1a1a; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 600; }
+
+/* Marquee dark strip */
+.marquee-strip { background: #8B0000; color: white; padding: 8px 0; overflow: hidden; }
+.marquee-strip .marquee-content { display: inline-flex; gap: 48px; animation: marquee-scroll 25s linear infinite; white-space: nowrap; font-size: 13px; font-weight: 500; }
+@keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
