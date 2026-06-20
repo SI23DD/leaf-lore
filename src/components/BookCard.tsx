@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Book } from '@/data/books';
 import { useCart } from '@/context/CartContext';
 
@@ -11,6 +12,7 @@ interface BookCardProps {
 
 export default function BookCard({ book, discount }: BookCardProps) {
   const { addToCart } = useCart();
+  const router = useRouter();
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -102,14 +104,14 @@ export default function BookCard({ book, discount }: BookCardProps) {
               >
                 ♡
               </button>
-              <Link
-                href={`/book/${book.id}`}
+              <button
+                onClick={e => { e.preventDefault(); e.stopPropagation(); router.push(`/book/${book.id}`); }}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-base transition-all"
                 style={{ backgroundColor: 'white', color: '#2D5016' }}
                 title="Quick view"
               >
                 👁
-              </Link>
+              </button>
             </div>
           )}
         </div>
