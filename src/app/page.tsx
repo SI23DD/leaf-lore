@@ -43,26 +43,50 @@ interface ApiBook {
 
 function useBooks(genre?: string, language?: string) {
   const [books, setBooks] = useState<ApiBook[]>([]);
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     const params = new URLSearchParams({ limit: '6' });
     if (genre) params.set('genre', genre);
     if (language) params.set('language', language);
     fetch(`${API_URL}/api/books?${params}`)
       .then(r => r.json())
-      .then(d => setBooks(d.books || []))
-      .catch(() => {});
+      .then(d => { setBooks(d.books || []); setLoaded(true); })
+      .catch(() => setLoaded(true));
   }, [genre, language]);
-  return books;
+  return { books, loaded };
 }
 
 function BookSection({ title, slug, genre, language, discount }: {
   title: string; slug: string; genre?: string; language?: string; discount: number;
 }) {
-  const bookList = useBooks(genre, language);
+  const { books: bookList, loaded } = useBooks(genre, language);
   const ref = useRef<HTMLDivElement>(null);
   function scroll(dir: 'l' | 'r') {
     ref.current?.scrollBy({ left: dir === 'r' ? 220 : -220, behavior: 'smooth' });
   }
+
+  // Coming Soon — no books in this category yet
+  if (loaded && bookList.length === 0) {
+    return (
+      <section style={{ backgroundColor: '#fff', padding: '36px 0 40px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1a1a1a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 24 }}>{title}</h2>
+          <div style={{ textAlign: 'center', padding: '40px 20px', border: '2px dashed #e0e0e0', borderRadius: 12, background: '#fafafa' }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>📦</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>Coming Soon!</h3>
+            <p style={{ fontSize: 14, color: '#888', marginBottom: 20 }}>
+              We&apos;re adding {title.toLowerCase().replace(' on sale', '')} books soon. Check back later!
+            </p>
+            <Link href="/contact"
+              style={{ display: 'inline-block', background: '#C82333', color: '#fff', padding: '10px 24px', borderRadius: 25, fontWeight: 600, fontSize: 13, textDecoration: 'none' }}>
+              Request a Book →
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section style={{ backgroundColor: '#fff', padding: '36px 0 40px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
@@ -81,7 +105,7 @@ function BookSection({ title, slug, genre, language, discount }: {
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff'; (e.currentTarget as HTMLButtonElement).style.color = '#C82333'; }}>›</button>
           </div>
         </div>
-        {bookList.length === 0 ? (
+        {!loaded ? (
           <div style={{ display: 'flex', gap: 16 }}>
             {[1,2,3,4,5].map(i => (
               <div key={i} style={{ minWidth: 196, height: 300, borderRadius: 8, background: '#f0f0f0', flexShrink: 0 }} className="skeleton" />
