@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useState, useEffect, useCallback } from 'react';
+import MobileDrawer from '@frontend/components/MobileDrawer';
 
 interface Stats {
   totalBooks: number;
@@ -47,6 +48,7 @@ export default function AdminDashboard() {
   const [formData, setFormData] = useState({ title: '', author: '', price: '', language: 'English', genre: 'Fiction', description: '', cover_color: '#C82333', stock: '10', isbn: '', image_url: '' });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -104,269 +106,326 @@ export default function AdminDashboard() {
     { label: 'Customers', value: stats?.totalUsers ?? '—', icon: '👥', color: '#1F618D' },
   ];
 
+  const sidebarNav = (
+    <>
+      <nav className="space-y-1">
+        {adminLinks.map(({ href, label, icon }) => (
+          <Link key={label} href={href}
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-white/10"
+            style={{ color: '#ffffff' }}>
+            <span>{icon}</span><span>{label}</span>
+          </Link>
+        ))}
+      </nav>
+      <div className="mt-8 pt-8 border-t border-white/20">
+        <Link href="/" onClick={() => setSidebarOpen(false)} className="flex items-center gap-2 text-xs opacity-70 hover:opacity-100 transition-opacity" style={{ color: '#ffffff' }}>
+          ← Back to Shop
+        </Link>
+      </div>
+    </>
+  );
+
   return (
-    <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen flex">
-      {/* Toast — slideDown animation */}
-      {toast && (
-        <div
-          className="fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium animate-slideDown"
-          style={{ backgroundColor: '#C82333' }}
-        >
-          {toast}
-        </div>
-      )}
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .admin-desktop-sidebar { display: none !important; }
+          .admin-mobile-topbar { display: flex !important; }
+          .admin-main-padding { padding: 16px !important; }
+          .admin-heading { font-size: 1.5rem !important; }
+          .admin-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .admin-content-grid { grid-template-columns: 1fr !important; }
+          .admin-table-scroll { overflow-x: auto; }
+          .admin-form-full button[type="submit"] { width: 100%; }
+          .admin-header-row { flex-direction: column; align-items: flex-start !important; gap: 12px; }
+        }
+        @media (min-width: 769px) {
+          .admin-mobile-topbar { display: none !important; }
+        }
+      `}</style>
 
-      {/* Sidebar */}
-      <aside style={{ backgroundColor: '#1a1a1a', minHeight: '100vh' }} className="w-56 shrink-0">
-        <div className="p-5">
-          <div className="flex items-center gap-2 mb-8">
-            <span className="text-xl">🍃</span>
-            <span style={{ fontFamily: 'var(--font-playfair), serif', color: '#ffffff' }} className="font-bold text-sm">Admin Panel</span>
-          </div>
-          <nav className="space-y-1">
-            {adminLinks.map(({ href, label, icon }) => (
-              <Link key={label} href={href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-white/10"
-                style={{ color: '#ffffff' }}>
-                <span>{icon}</span><span>{label}</span>
-              </Link>
-            ))}
-          </nav>
-          <div className="mt-8 pt-8 border-t border-white/20">
-            <Link href="/" className="flex items-center gap-2 text-xs opacity-70 hover:opacity-100 transition-opacity" style={{ color: '#ffffff' }}>
-              ← Back to Shop
-            </Link>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <div className="flex-1 p-8 overflow-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-3xl font-bold mb-1">Dashboard</h1>
-            <p className="text-gray-500 text-sm">Welcome back! Here&apos;s what&apos;s happening at Leaf &amp; Lore.</p>
-          </div>
-          <button onClick={fetchData} className="text-xs px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: '#e5e5e5', color: '#666666' }}>
-            ↻ Refresh
-          </button>
-        </div>
-
-        {/* Stats — each card gets scaleIn with staggered delays */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statCards.map(({ label, value, icon, color }, idx) => (
-            <div
-              key={label}
-              className={`rounded-2xl p-5 shadow-sm animate-scaleIn ${statDelays[idx]} hover-lift`}
-              style={{ backgroundColor: 'white', border: '1px solid #e5e5e5', opacity: 0 }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-2xl">{icon}</span>
-                {loading && <span className="text-xs text-gray-400">loading…</span>}
-              </div>
-              <p style={{ fontFamily: 'var(--font-playfair), serif', color }} className="text-2xl font-bold">{value}</p>
-              <p className="text-xs text-gray-500 mt-1">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Status breakdown */}
-        {stats?.ordersByStatus && Object.keys(stats.ordersByStatus).length > 0 && (
-          <div className="mb-6 rounded-2xl p-5 shadow-sm flex flex-wrap gap-3" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
-            <span className="text-xs font-medium text-gray-500 self-center mr-2">Orders by status:</span>
-            {Object.entries(stats.ordersByStatus).map(([s, n]) => (
-              <span key={s} className="text-xs px-3 py-1 rounded-full text-white"
-                style={{ backgroundColor: statusColors[s] || '#888' }}>
-                {s}: {n}
-              </span>
-            ))}
+      <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen flex flex-col">
+        {/* Toast */}
+        {toast && (
+          <div
+            className="fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium animate-slideDown"
+            style={{ backgroundColor: '#C82333' }}
+          >
+            {toast}
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Orders */}
-          <div className="lg:col-span-2 rounded-2xl p-6 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
-            <div className="flex items-center justify-between mb-5">
-              <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-xl font-bold">Recent Orders</h2>
-              <Link href="/admin/orders" className="text-xs hover:underline" style={{ color: '#666666' }}>View all →</Link>
+        {/* Mobile top bar */}
+        <div
+          className="admin-mobile-topbar"
+          style={{
+            position: 'sticky', top: 0, zIndex: 100, backgroundColor: '#1a1a1a',
+            color: 'white', padding: '12px 16px', alignItems: 'center', gap: 12,
+          }}
+        >
+          <button
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+            style={{ background: 'none', border: 'none', color: 'white', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: 0 }}
+          >
+            ≡
+          </button>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>🍃 Admin Panel</span>
+        </div>
+
+        {/* Mobile sidebar drawer */}
+        <MobileDrawer open={sidebarOpen} onClose={() => setSidebarOpen(false)} title="" width={260}>
+          <div style={{ backgroundColor: '#1a1a1a', minHeight: '100%', margin: '-16px -20px', padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+              <span style={{ fontSize: 20 }}>🍃</span>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>Admin Panel</span>
             </div>
-            {loading ? (
-              <div className="text-center py-8 text-gray-400 text-sm">Loading orders…</div>
-            ) : orders.length === 0 ? (
-              <div className="text-center py-8 text-gray-400 text-sm">No orders yet.</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs text-gray-500 border-b" style={{ borderColor: '#e5e5e5' }}>
-                      <th className="pb-3 font-medium">Customer</th>
-                      <th className="pb-3 font-medium hidden md:table-cell">Books</th>
-                      <th className="pb-3 font-medium">Amount</th>
-                      <th className="pb-3 font-medium">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order, rowIdx) => (
-                      <tr
-                        key={order.id}
-                        className={`border-b last:border-0 animate-fadeInUp`}
-                        style={{
-                          borderColor: '#f5f5f5',
-                          animationDelay: `${0.05 * rowIdx + 0.2}s`,
-                          opacity: 0,
-                          animationFillMode: 'forwards',
-                        }}
-                      >
-                        <td className="py-3">
-                          <div className="font-medium text-gray-800 text-xs">{order.customer_name}</div>
-                          <div className="text-gray-400 text-xs">{order.customer_email}</div>
-                        </td>
-                        <td className="py-3 text-gray-500 hidden md:table-cell text-xs max-w-[150px] truncate">
-                          {order.order_items?.map(i => i.book?.title).filter(Boolean).join(', ') || '—'}
-                        </td>
-                        <td className="py-3 font-medium text-xs">₹{order.total_amount.toLocaleString('en-IN')}</td>
-                        <td className="py-3">
-                          <select
-                            value={order.status}
-                            onChange={e => handleStatusChange(order.id, e.target.value)}
-                            className="text-xs px-2 py-0.5 rounded-full text-white border-0 outline-none cursor-pointer"
-                            style={{ backgroundColor: statusColors[order.status] || '#888' }}>
-                            {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => (
-                              <option key={s} value={s} style={{ backgroundColor: '#fff', color: '#1a1a1a' }}>{s}</option>
-                            ))}
-                          </select>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {sidebarNav}
+          </div>
+        </MobileDrawer>
+
+        <div className="flex flex-1">
+          {/* Desktop Sidebar */}
+          <aside
+            className="admin-desktop-sidebar"
+            style={{ backgroundColor: '#1a1a1a', minHeight: '100vh', width: 224, flexShrink: 0 }}
+          >
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-8">
+                <span className="text-xl">🍃</span>
+                <span style={{ fontFamily: 'var(--font-playfair), serif', color: '#ffffff' }} className="font-bold text-sm">Admin Panel</span>
+              </div>
+              {sidebarNav}
+            </div>
+          </aside>
+
+          {/* Main */}
+          <div className="flex-1 admin-main-padding p-8 overflow-auto">
+            <div className="mb-8 admin-header-row flex items-center justify-between">
+              <div>
+                <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="admin-heading text-3xl font-bold mb-1">Dashboard</h1>
+                <p className="text-gray-500 text-sm">Welcome back! Here&apos;s what&apos;s happening at Leaf &amp; Lore.</p>
+              </div>
+              <button onClick={fetchData} className="text-xs px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: '#e5e5e5', color: '#666666' }}>
+                ↻ Refresh
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="admin-stats-grid grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              {statCards.map(({ label, value, icon, color }, idx) => (
+                <div
+                  key={label}
+                  className={`rounded-2xl p-5 shadow-sm animate-scaleIn ${statDelays[idx]} hover-lift`}
+                  style={{ backgroundColor: 'white', border: '1px solid #e5e5e5', opacity: 0 }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-2xl">{icon}</span>
+                    {loading && <span className="text-xs text-gray-400">loading…</span>}
+                  </div>
+                  <p style={{ fontFamily: 'var(--font-playfair), serif', color }} className="text-2xl font-bold">{value}</p>
+                  <p className="text-xs text-gray-500 mt-1">{label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Status breakdown */}
+            {stats?.ordersByStatus && Object.keys(stats.ordersByStatus).length > 0 && (
+              <div className="mb-6 rounded-2xl p-5 shadow-sm flex flex-wrap gap-3" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
+                <span className="text-xs font-medium text-gray-500 self-center mr-2">Orders by status:</span>
+                {Object.entries(stats.ordersByStatus).map(([s, n]) => (
+                  <span key={s} className="text-xs px-3 py-1 rounded-full text-white"
+                    style={{ backgroundColor: statusColors[s] || '#888' }}>
+                    {s}: {n}
+                  </span>
+                ))}
               </div>
             )}
-          </div>
 
-          {/* Quick Add Book */}
-          <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
-            <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-xl font-bold mb-5">Add Book</h2>
-            <form onSubmit={handleAddBook} className="space-y-3">
-              {(['title', 'author'] as const).map(field => (
-                <div key={field}>
-                  <label className="text-xs font-medium text-gray-600 block mb-1 capitalize">{field}</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData[field]}
-                    onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))}
-                    placeholder={`Book ${field}`}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                  />
+            <div className="admin-content-grid grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Recent Orders */}
+              <div className="lg:col-span-2 rounded-2xl p-6 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
+                <div className="flex items-center justify-between mb-5">
+                  <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-xl font-bold">Recent Orders</h2>
+                  <Link href="/admin/orders" className="text-xs hover:underline" style={{ color: '#666666' }}>View all →</Link>
                 </div>
-              ))}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs font-medium text-gray-600 block mb-1">Price (₹)</label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    value={formData.price}
-                    onChange={e => setFormData(p => ({ ...p, price: e.target.value }))}
-                    placeholder="₹"
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-gray-600 block mb-1">Stock</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.stock}
-                    onChange={e => setFormData(p => ({ ...p, stock: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                  />
-                </div>
+                {loading ? (
+                  <div className="text-center py-8 text-gray-400 text-sm">Loading orders…</div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400 text-sm">No orders yet.</div>
+                ) : (
+                  <div className="admin-table-scroll overflow-x-auto">
+                    <table className="w-full text-sm" style={{ minWidth: 400 }}>
+                      <thead>
+                        <tr className="text-left text-xs text-gray-500 border-b" style={{ borderColor: '#e5e5e5' }}>
+                          <th className="pb-3 font-medium">Customer</th>
+                          <th className="pb-3 font-medium hidden md:table-cell">Books</th>
+                          <th className="pb-3 font-medium">Amount</th>
+                          <th className="pb-3 font-medium">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((order, rowIdx) => (
+                          <tr
+                            key={order.id}
+                            className="border-b last:border-0 animate-fadeInUp"
+                            style={{
+                              borderColor: '#f5f5f5',
+                              animationDelay: `${0.05 * rowIdx + 0.2}s`,
+                              opacity: 0,
+                              animationFillMode: 'forwards',
+                            }}
+                          >
+                            <td className="py-3">
+                              <div className="font-medium text-gray-800 text-xs">{order.customer_name}</div>
+                              <div className="text-gray-400 text-xs">{order.customer_email}</div>
+                            </td>
+                            <td className="py-3 text-gray-500 hidden md:table-cell text-xs max-w-[150px] truncate">
+                              {order.order_items?.map(i => i.book?.title).filter(Boolean).join(', ') || '—'}
+                            </td>
+                            <td className="py-3 font-medium text-xs">₹{order.total_amount.toLocaleString('en-IN')}</td>
+                            <td className="py-3">
+                              <select
+                                value={order.status}
+                                onChange={e => handleStatusChange(order.id, e.target.value)}
+                                className="text-xs px-2 py-0.5 rounded-full text-white border-0 outline-none cursor-pointer"
+                                style={{ backgroundColor: statusColors[order.status] || '#888' }}>
+                                {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => (
+                                  <option key={s} value={s} style={{ backgroundColor: '#fff', color: '#1a1a1a' }}>{s}</option>
+                                ))}
+                              </select>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-              {(['language', 'genre'] as const).map(field => (
-                <div key={field}>
-                  <label className="text-xs font-medium text-gray-600 block mb-1 capitalize">{field}</label>
-                  <select
-                    value={formData[field]}
-                    onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff', color: '#1a1a1a' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                  >
-                    {(field === 'language' ? LANGUAGES : GENRES).map(v => <option key={v}>{v}</option>)}
-                  </select>
-                </div>
-              ))}
-              {/* ISBN */}
-              <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">ISBN <span className="text-gray-400">(for auto cover image)</span></label>
-                <input type="text" value={formData.isbn}
-                  onChange={e => setFormData(p => ({ ...p, isbn: e.target.value }))}
-                  placeholder="e.g. 9780735211292"
-                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                  style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                  onFocus={e => e.currentTarget.style.borderColor = '#C82333'}
-                  onBlur={e => e.currentTarget.style.borderColor = '#e5e5e5'}
-                />
-                <p className="text-xs text-gray-400 mt-0.5">Search book on Google → copy ISBN from barcode</p>
+
+              {/* Quick Add Book */}
+              <div className="rounded-2xl p-6 shadow-sm admin-form-full" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
+                <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-xl font-bold mb-5">Add Book</h2>
+                <form onSubmit={handleAddBook} className="space-y-3">
+                  {(['title', 'author'] as const).map(field => (
+                    <div key={field}>
+                      <label className="text-xs font-medium text-gray-600 block mb-1 capitalize">{field}</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData[field]}
+                        onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))}
+                        placeholder={`Book ${field}`}
+                        className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                        style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                        onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                        onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
+                      />
+                    </div>
+                  ))}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium text-gray-600 block mb-1">Price (₹)</label>
+                      <input
+                        type="number"
+                        required
+                        min="1"
+                        value={formData.price}
+                        onChange={e => setFormData(p => ({ ...p, price: e.target.value }))}
+                        placeholder="₹"
+                        className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                        style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                        onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                        onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-600 block mb-1">Stock</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.stock}
+                        onChange={e => setFormData(p => ({ ...p, stock: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                        style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                        onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                        onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
+                      />
+                    </div>
+                  </div>
+                  {(['language', 'genre'] as const).map(field => (
+                    <div key={field}>
+                      <label className="text-xs font-medium text-gray-600 block mb-1 capitalize">{field}</label>
+                      <select
+                        value={formData[field]}
+                        onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+                        style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff', color: '#1a1a1a' }}
+                        onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                        onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
+                      >
+                        {(field === 'language' ? LANGUAGES : GENRES).map(v => <option key={v}>{v}</option>)}
+                      </select>
+                    </div>
+                  ))}
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 block mb-1">ISBN <span className="text-gray-400">(for auto cover image)</span></label>
+                    <input type="text" value={formData.isbn}
+                      onChange={e => setFormData(p => ({ ...p, isbn: e.target.value }))}
+                      placeholder="e.g. 9780735211292"
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                      style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                      onFocus={e => e.currentTarget.style.borderColor = '#C82333'}
+                      onBlur={e => e.currentTarget.style.borderColor = '#e5e5e5'}
+                    />
+                    <p className="text-xs text-gray-400 mt-0.5">Search book on Google → copy ISBN from barcode</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 block mb-1">Cover Image URL <span className="text-gray-400">(optional)</span></label>
+                    <input type="text" value={formData.image_url}
+                      onChange={e => setFormData(p => ({ ...p, image_url: e.target.value }))}
+                      placeholder="Paste image link from Google/anywhere"
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                      style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                      onFocus={e => e.currentTarget.style.borderColor = '#C82333'}
+                      onBlur={e => e.currentTarget.style.borderColor = '#e5e5e5'}
+                    />
+                    <p className="text-xs text-gray-400 mt-0.5">Right-click any book cover online → Copy image address</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 block mb-1">Cover Color <span className="text-gray-400">(shows if no image found)</span></label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={formData.cover_color}
+                        onChange={e => setFormData(p => ({ ...p, cover_color: e.target.value }))}
+                        className="h-8 w-10 rounded cursor-pointer border-0" />
+                      <span className="text-xs text-gray-500">{formData.cover_color}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 block mb-1">Description</label>
+                    <textarea
+                      rows={2}
+                      value={formData.description}
+                      onChange={e => setFormData(p => ({ ...p, description: e.target.value }))}
+                      placeholder="Short description…"
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none transition-all duration-200"
+                      style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                      onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
+                      onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
+                    />
+                  </div>
+                  <button type="submit" disabled={saving}
+                    className="w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-200 hover:opacity-90 mt-2 disabled:opacity-60"
+                    style={{ backgroundColor: '#C82333', color: 'white' }}>
+                    {saving ? 'Adding…' : '+ Add Book'}
+                  </button>
+                </form>
               </div>
-              {/* Image URL */}
-              <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Cover Image URL <span className="text-gray-400">(optional)</span></label>
-                <input type="text" value={formData.image_url}
-                  onChange={e => setFormData(p => ({ ...p, image_url: e.target.value }))}
-                  placeholder="Paste image link from Google/anywhere"
-                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                  style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                  onFocus={e => e.currentTarget.style.borderColor = '#C82333'}
-                  onBlur={e => e.currentTarget.style.borderColor = '#e5e5e5'}
-                />
-                <p className="text-xs text-gray-400 mt-0.5">Right-click any book cover online → Copy image address</p>
-              </div>
-              {/* Cover Color fallback */}
-              <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Cover Color <span className="text-gray-400">(shows if no image found)</span></label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={formData.cover_color}
-                    onChange={e => setFormData(p => ({ ...p, cover_color: e.target.value }))}
-                    className="h-8 w-10 rounded cursor-pointer border-0" />
-                  <span className="text-xs text-gray-500">{formData.cover_color}</span>
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={formData.description}
-                  onChange={e => setFormData(p => ({ ...p, description: e.target.value }))}
-                  placeholder="Short description…"
-                  className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none transition-all duration-200"
-                  style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                  onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                  onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                />
-              </div>
-              <button type="submit" disabled={saving}
-                className="w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-200 hover:opacity-90 mt-2 disabled:opacity-60"
-                style={{ backgroundColor: '#C82333', color: 'white' }}>
-                {saving ? 'Adding…' : '+ Add Book'}
-              </button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

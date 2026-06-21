@@ -225,6 +225,25 @@ export default function LoginPage() {
           flex-direction: column;
           gap: 1rem;
         }
+        @media (max-width: 768px) {
+          .ll-login-page {
+            padding: 1rem 1rem;
+            align-items: flex-start;
+            padding-top: 2rem;
+          }
+          .ll-login-card {
+            padding: 1.5rem 1rem;
+            border-radius: 8px;
+          }
+          .ll-heading {
+            font-size: 1.35rem;
+          }
+          .ll-btn-primary, .ll-btn-outline {
+            width: 100%;
+            display: block;
+            box-sizing: border-box;
+          }
+        }
       `}</style>
 
       <div className="ll-login-page">

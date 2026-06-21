@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useSearchParams, useRouter } from 'next/navigation';
 import BookCard from '@frontend/components/BookCard';
+import MobileDrawer from '@frontend/components/MobileDrawer';
 
 const languages = ['English', 'Japanese', 'Hindi', 'Marathi', 'Manga/Anime'];
 const genres = ['Fiction', 'Non-fiction', 'Mystery', 'Romance', 'Fantasy', 'Self-help', "Children's", 'Manga', 'Poetry', 'History'];
@@ -274,6 +275,7 @@ function ShopInner() {
   const [availability, setAvailability] = useState<string[]>([]);
   const [sort, setSort] = useState<SortOption>('default');
   const [showFilters, setShowFilters] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [view, setView] = useState<ViewMode>('grid');
   const [page, setPage] = useState(1);
   const [booksVisible, setBooksVisible] = useState(false);
@@ -357,29 +359,42 @@ function ShopInner() {
       <style>{`
         .shop-grid-view { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
         @media (max-width: 1100px) { .shop-grid-view { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { .shop-grid-view { grid-template-columns: repeat(2, 1fr); } .shop-layout { flex-direction: column !important; } .shop-sidebar-wrap { width: 100% !important; } }
+        @media (max-width: 768px) {
+          .shop-grid-view { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          .shop-layout { flex-direction: column !important; }
+          .shop-sidebar-desktop { display: none !important; }
+          .shop-topbar { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+          .shop-topbar-right { flex-wrap: wrap !important; }
+          .shop-search-bar { max-width: 100% !important; }
+          .shop-pagination { gap: 4px !important; }
+          .shop-pagination button { padding: 6px 10px !important; font-size: 12px !important; }
+          .shop-pagination .pg-num { width: 28px !important; height: 28px !important; font-size: 12px !important; }
+          .shop-header-inner { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+          .shop-header-inner > div:last-child { width: 100% !important; flex-direction: row !important; justify-content: space-between !important; }
+          .shop-sort-select { flex: 1 !important; }
+        }
         .shop-topbar-btn { padding: 8px 10px; border-radius: 4px; border: 1px solid #e0e0e0; background: #fff; color: #444; cursor: pointer; font-size: 15px; line-height: 1; transition: all 0.15s; }
         .shop-topbar-btn.active { border-color: #C82333; background: #C82333; color: #fff; }
         .shop-topbar-btn:hover:not(.active) { border-color: #C82333; color: #C82333; }
         .shop-sort-select { padding: 8px 12px; border-radius: 4px; border: 1px solid #e0e0e0; background: #fff; font-size: 13px; color: #333; cursor: pointer; outline: none; }
         .shop-sort-select:focus { border-color: #C82333; }
-        .shop-filter-mobile-btn { display: none; padding: 8px 14px; border-radius: 4px; border: 1px solid #C82333; background: #fff; color: #C82333; font-size: 13px; font-weight: 600; cursor: pointer; }
-        @media (max-width: 768px) { .shop-filter-mobile-btn { display: block; } }
+        .shop-filter-mobile-btn { display: none; padding: 9px 16px; border-radius: 4px; border: 1.5px solid #C82333; background: #fff; color: #C82333; font-size: 13px; font-weight: 700; cursor: pointer; }
+        @media (max-width: 768px) { .shop-filter-mobile-btn { display: flex; align-items: center; gap: 6px; } }
         @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
       `}</style>
 
       {/* Page header */}
       <div style={{ borderBottom: '1px solid #f0f0f0', padding: '20px 0', backgroundColor: '#fff' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }} className="shop-header-inner">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: 0, letterSpacing: '-0.01em' }}>All Books</h1>
             <p style={{ fontSize: 12, color: '#999', margin: '2px 0 0', letterSpacing: '0.02em' }}>
               {loading ? 'Loading…' : `${total} books available`}
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button className="shop-filter-mobile-btn" onClick={() => setShowFilters(f => !f)}>
-              {showFilters ? 'Hide Filters' : 'Filters ▾'}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }} className="shop-header-actions">
+            <button className="shop-filter-mobile-btn" onClick={() => setDrawerOpen(true)}>
+              <span>⚙</span> Filters
             </button>
             <select className="shop-sort-select" value={sort} onChange={e => setSort(e.target.value as SortOption)}>
               <option value="default">Sort: Default</option>
@@ -392,14 +407,35 @@ function ShopInner() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 24px 64px', display: 'flex', gap: 28, alignItems: 'flex-start' }} className="shop-layout">
+      {/* Mobile filter drawer */}
+      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Filters" width={300}>
+        <Sidebar
+          selectedLanguages={selectedLanguages}
+          setSelectedLanguages={setSelectedLanguages}
+          selectedGenres={selectedGenres}
+          setSelectedGenres={setSelectedGenres}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          availability={availability}
+          setAvailability={setAvailability}
+          onClear={clearAll}
+          genreCounts={genreCounts}
+          langCounts={langCounts}
+        />
+        <div style={{ marginTop: 20 }}>
+          <button
+            onClick={() => setDrawerOpen(false)}
+            style={{ width: '100%', padding: '12px 0', border: 'none', borderRadius: 4, background: '#C82333', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+          >
+            Apply Filters
+          </button>
+        </div>
+      </MobileDrawer>
 
-        {/* Sidebar */}
-        <aside className="shop-sidebar-wrap" style={{ width: 220, flexShrink: 0, display: showFilters || typeof window === 'undefined' ? 'block' : undefined }} id="shop-sidebar">
-          <style>{`
-            @media (min-width: 769px) { #shop-sidebar { display: block !important; } }
-            @media (max-width: 768px) { #shop-sidebar { display: ${showFilters ? 'block' : 'none'} !important; } }
-          `}</style>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 16px 64px', display: 'flex', gap: 28, alignItems: 'flex-start' }} className="shop-layout">
+
+        {/* Desktop Sidebar */}
+        <aside className="shop-sidebar-desktop shop-sidebar-wrap" style={{ width: 220, flexShrink: 0 }}>
           <div style={{ position: 'sticky', top: 80, background: '#fff', border: '1px solid #e8e8e8', borderRadius: 4, padding: '8px 16px 16px' }}>
             <Sidebar
               selectedLanguages={selectedLanguages}
@@ -420,10 +456,10 @@ function ShopInner() {
         {/* Main content */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Top bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+          <div className="shop-topbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', flex: 1 }}>
               {/* Search */}
-              <div style={{ position: 'relative', flex: '1 1 200px', maxWidth: 340 }}>
+              <div className="shop-search-bar" style={{ position: 'relative', flex: '1 1 200px', maxWidth: 340 }}>
                 <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#aaa', fontSize: 13, pointerEvents: 'none' }}>🔍</span>
                 <input
                   type="text"
@@ -505,7 +541,7 @@ function ShopInner() {
 
           {/* Pagination */}
           {!loading && totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 40 }}>
+            <div className="shop-pagination" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 40, flexWrap: 'wrap' }}>
               <button
                 onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 disabled={page === 1}
@@ -520,6 +556,7 @@ function ShopInner() {
                     <button
                       key={p}
                       onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      className="pg-num"
                       style={{ width: 34, height: 34, border: `1px solid ${page === p ? '#C82333' : '#e0e0e0'}`, borderRadius: 4, background: page === p ? '#C82333' : '#fff', color: page === p ? '#fff' : '#444', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                     >
                       {p}

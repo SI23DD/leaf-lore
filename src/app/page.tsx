@@ -94,7 +94,7 @@ function BookSection({ title, slug, genre, language, discount }: {
           <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1a1a1a', textTransform: 'uppercase', letterSpacing: '0.04em', margin: 0 }}>
             {title}
           </h2>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="hp-section-arrows" style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => scroll('l')} aria-label="Scroll left"
               style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #C82333', background: '#fff', color: '#C82333', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, color 0.18s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#C82333'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; }}
@@ -114,7 +114,7 @@ function BookSection({ title, slug, genre, language, discount }: {
         ) : (
           <div ref={ref} style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none' }}>
             {bookList.map(b => (
-              <div key={b.id} style={{ minWidth: 196, maxWidth: 196, flexShrink: 0 }}>
+              <div key={b.id} className="hp-book-card-wrap" style={{ minWidth: 196, maxWidth: 196, flexShrink: 0 }}>
                 <BookCard book={{ ...b, coverColor: b.cover_color } as never} discount={discount} />
               </div>
             ))}
@@ -164,9 +164,26 @@ export default function HomePage() {
         @media (max-width: 768px) {
           .hp-hero-books { display: none !important; }
           .hp-hero-inner { grid-template-columns: 1fr !important; }
+          .hp-hero-cta { flex-direction: column !important; }
+          .hp-hero-cta a { width: 100% !important; text-align: center !important; }
+          .hp-stats-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px !important; }
+          .hp-promo-grid { grid-template-columns: 1fr !important; }
+          .hp-news-grid { grid-template-columns: 1fr !important; }
+          .hp-trust-grid { grid-template-columns: 1fr 1fr !important; }
+          .hp-section-arrows { display: none !important; }
+          .hp-book-card-wrap { min-width: 160px !important; max-width: 160px !important; }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .hp-trust-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 768px) {
+          .hp-hero-section { padding: 48px 16px 40px !important; }
+          .hp-category-link { flex-shrink: 0; min-width: 80px !important; }
+          .hp-category-section { justify-content: flex-start !important; }
+          .hp-section-inner { padding: 0 16px !important; }
         }
       `}</style>
-      <section style={{
+      <section className="hp-hero-section" style={{
         backgroundImage: 'url(https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1920&q=80)',
         backgroundSize: 'cover', backgroundPosition: 'center',
         padding: '72px 20px 64px', overflow: 'hidden', position: 'relative'
@@ -181,14 +198,14 @@ export default function HomePage() {
             <div style={{ display: 'inline-block', background: 'rgba(200,35,51,0.2)', border: '1px solid rgba(200,35,51,0.4)', color: '#ff6b7a', fontSize: 12, fontWeight: 700, padding: '5px 14px', borderRadius: 20, marginBottom: 20, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               🎉 Summer Sale — Up to 40% Off
             </div>
-            <h1 className="hp-hero-title" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 18, letterSpacing: '-0.02em' }}>
+            <h1 className="hp-hero-title" style={{ fontSize: 'clamp(24px, 8vw, 52px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 18, letterSpacing: '-0.02em' }}>
               Your Ultimate<br />
               <span style={{ color: '#FFC107' }}>Book Destination</span>
             </h1>
             <p className="hp-hero-sub" style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, marginBottom: 32, maxWidth: 420, lineHeight: 1.7 }}>
               Discover 45+ books across 5 languages — English, Hindi, Marathi, Japanese & Manga. From timeless classics to contemporary favourites.
             </p>
-            <div className="hp-hero-cta" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+            <div className="hp-hero-cta" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'stretch' }}>
               <Link href="/shop"
                 style={{ display: 'inline-block', background: '#C82333', color: '#fff', padding: '14px 36px', borderRadius: 6, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(200,35,51,0.4)', transition: 'transform 0.18s, box-shadow 0.18s' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 28px rgba(200,35,51,0.5)'; }}
@@ -203,7 +220,7 @@ export default function HomePage() {
               </Link>
             </div>
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: 32, marginTop: 40, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="hp-stats-row" style={{ display: 'flex', gap: 32, marginTop: 40, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
               {[['45+', 'Books'], ['5', 'Languages'], ['10', 'Genres'], ['500+', 'Readers']].map(([n, l]) => (
                 <div key={l}>
                   <div style={{ fontSize: 22, fontWeight: 800, color: '#FFC107' }}>{n}</div>
@@ -249,11 +266,12 @@ export default function HomePage() {
       {/* ── 2. Category circles ────────────────────────────────────────────── */}
       <section style={{ background: '#fff', padding: '36px 20px 32px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 20, overflowX: 'auto', justifyContent: 'space-around', paddingBottom: 4, scrollbarWidth: 'none' }}>
+          <div className="hp-category-section" style={{ display: 'flex', gap: 20, overflowX: 'auto', justifyContent: 'space-around', paddingBottom: 4, scrollbarWidth: 'none' }}>
             {categories.map(cat => (
               <Link
                 key={cat.label}
                 href={cat.href}
+                className="hp-category-link"
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, textDecoration: 'none', flexShrink: 0 }}
               >
                 <div
@@ -289,7 +307,7 @@ export default function HomePage() {
 
       {/* ── 5. Wide promo banner ───────────────────────────────────────────── */}
       <section style={{ background: '#f6f6f6', padding: '32px 20px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div className="hp-promo-grid" style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
           {/* Left card — new books */}
           <div
             style={{ background: '#1a5c2a', borderRadius: 10, padding: '36px 32px', color: '#fff', position: 'relative', overflow: 'hidden', minHeight: 200 }}
@@ -385,7 +403,7 @@ export default function HomePage() {
 
       {/* ── 10. Trust badges ───────────────────────────────────────────────── */}
       <section style={{ background: '#fff', padding: '28px 20px', borderTop: '1px solid #f0f0f0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
+        <div className="hp-trust-grid" style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
           {[
             { icon: '✅', title: '100% New & Original Books', sub: 'Every title is brand new' },
             { icon: '🏷️', title: 'Unbelievable Prices',        sub: 'Best deals, always' },

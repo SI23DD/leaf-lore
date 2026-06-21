@@ -38,14 +38,14 @@ function WishlistBookCard({ book, onRemove }: { book: Book; onRemove: () => void
   const stars = Math.round(book.rating);
 
   return (
-    <div style={{
+    <div className="wl-card" style={{
       display: 'flex', gap: 20, background: '#fff', borderRadius: 12,
       border: '1px solid #eee', padding: 16, alignItems: 'flex-start',
       transition: 'box-shadow 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
     }}>
       {/* Cover */}
       <Link href={`/book/${book.id}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
-        <div style={{
+        <div className="wl-card-cover" style={{
           width: 100, height: 140, borderRadius: 8, overflow: 'hidden',
           backgroundColor: book.cover_color, position: 'relative',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -96,7 +96,7 @@ function WishlistBookCard({ book, onRemove }: { book: Book; onRemove: () => void
         <p style={{ fontSize: 20, fontWeight: 800, color: '#C82333', marginBottom: 12 }}>₹{book.price}</p>
 
         {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="wl-card-actions" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button onClick={handleAddToCart} disabled={book.stock === 0}
             style={{
               padding: '8px 20px', borderRadius: 6, border: '1.5px solid #C82333',
@@ -182,17 +182,31 @@ export default function WishlistPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f8f8', padding: '32px 20px' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .wl-outer { padding: 16px !important; }
+          .wl-header { flex-direction: column !important; align-items: flex-start !important; }
+          .wl-header-btns { width: 100%; display: flex; gap: 8px; }
+          .wl-header-btns button { flex: 1; }
+          .wl-layout { grid-template-columns: 1fr !important; }
+          .wl-summary-sticky { position: static !important; }
+          .wl-card { flex-wrap: wrap; }
+          .wl-card-cover { width: 70px !important; height: 100px !important; }
+          .wl-card-actions { flex-wrap: wrap !important; }
+          .wl-card-actions button { flex: 1 1 auto; text-align: center; }
+        }
+      `}</style>
+      <div className="wl-outer" style={{ maxWidth: 900, margin: '0 auto' }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+        <div className="wl-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1a1a1a', marginBottom: 4 }}>
               ❤️ My Wishlist
             </h1>
             <p style={{ fontSize: 14, color: '#888' }}>{ids.length} book{ids.length !== 1 ? 's' : ''} saved</p>
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div className="wl-header-btns" style={{ display: 'flex', gap: 10 }}>
             {inStock.length > 0 && (
               <button onClick={handleAddAllToCart}
                 style={{
@@ -214,7 +228,7 @@ export default function WishlistPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr minmax(240px, 280px)', gap: 24, alignItems: 'start' }}>
+        <div className="wl-layout" style={{ display: 'grid', gridTemplateColumns: '1fr minmax(240px, 280px)', gap: 24, alignItems: 'start' }}>
 
           {/* Book list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -224,7 +238,7 @@ export default function WishlistPage() {
           </div>
 
           {/* Summary card */}
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #eee', padding: 24, position: 'sticky', top: 90 }}>
+          <div className="wl-summary-sticky" style={{ background: '#fff', borderRadius: 12, border: '1px solid #eee', padding: 24, position: 'sticky', top: 90 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', marginBottom: 16 }}>Wishlist Summary</h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16, fontSize: 14 }}>

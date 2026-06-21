@@ -31,13 +31,32 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center animate-fadeIn" style={{ backgroundColor: '#ffffff' }}>
-      <div className="w-full max-w-sm animate-scaleIn">
+      <style>{`
+        @media (max-width: 768px) {
+          .admin-login-wrap {
+            padding: 0 16px !important;
+            width: 100% !important;
+          }
+          .admin-login-card {
+            padding: 24px 16px !important;
+          }
+          .admin-login-card button[type="submit"] {
+            width: 100%;
+            box-sizing: border-box;
+          }
+          .admin-login-card input {
+            width: 100%;
+            box-sizing: border-box;
+          }
+        }
+      `}</style>
+      <div className="admin-login-wrap w-full max-w-sm animate-scaleIn" style={{ padding: '0 16px' }}>
         <div className="text-center mb-8">
           <div className="text-5xl mb-3 animate-float">🍃</div>
           <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-2xl font-bold">Admin Access</h1>
           <p className="text-gray-500 text-sm mt-1">Shop owners only</p>
         </div>
-        <div className="rounded-2xl p-8 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
+        <div className="admin-login-card rounded-2xl p-8 shadow-sm" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="text-xs font-medium text-gray-600 block mb-1.5">Admin Secret Key</label>

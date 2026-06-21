@@ -268,6 +268,24 @@ export default function RegisterPage() {
           text-decoration: none;
         }
         .ll-already a:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+          .ll-reg-page {
+            padding: 1rem 1rem;
+            align-items: flex-start;
+            padding-top: 2rem;
+          }
+          .ll-reg-card {
+            padding: 1.5rem 1rem;
+            border-radius: 8px;
+          }
+          .ll-heading {
+            font-size: 1.35rem;
+          }
+          .ll-btn-primary {
+            width: 100%;
+            box-sizing: border-box;
+          }
+        }
       `}</style>
 
       <div className="ll-reg-page">

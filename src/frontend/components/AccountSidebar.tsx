@@ -29,7 +29,12 @@ function avatarColor(name: string) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-export default function AccountSidebar() {
+interface AccountSidebarProps {
+  isMobile?: boolean;
+  onClose?: () => void;
+}
+
+export default function AccountSidebar({ isMobile, onClose }: AccountSidebarProps = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -44,20 +49,24 @@ export default function AccountSidebar() {
     router.push('/');
   }
 
+  function handleNavClick() {
+    if (isMobile && onClose) onClose();
+  }
+
   return (
     <aside
-      className="animate-fadeInLeft"
+      className={isMobile ? '' : 'animate-fadeInLeft'}
       style={{
-        width: '260px',
-        minWidth: '220px',
+        width: isMobile ? '100%' : '260px',
+        minWidth: isMobile ? undefined : '220px',
         flexShrink: 0,
         backgroundColor: 'white',
-        border: '1px solid #E8E0D5',
-        borderRadius: '20px',
+        border: isMobile ? 'none' : '1px solid #E8E0D5',
+        borderRadius: isMobile ? '0' : '20px',
         padding: '28px 20px',
         height: 'fit-content',
-        position: 'sticky',
-        top: '96px',
+        position: isMobile ? 'static' : 'sticky',
+        top: isMobile ? undefined : '96px',
       }}
     >
       {/* Avatar + user info */}
@@ -142,6 +151,7 @@ export default function AccountSidebar() {
             <Link
               key={label}
               href={href!}
+              onClick={handleNavClick}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -217,5 +227,54 @@ export default function AccountSidebar() {
         </div>
       </nav>
     </aside>
+  );
+}
+
+/** Top bar shown on mobile — user name + hamburger to open sidebar drawer */
+export function AccountMobileNav({ onOpen, pageTitle }: { onOpen: () => void; pageTitle: string }) {
+  const { user } = useAuth();
+  if (!user) return null;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        backgroundColor: '#FFFFFF',
+        borderBottom: '1px solid #E8E0D5',
+        marginBottom: '16px',
+        borderRadius: '12px',
+      }}
+    >
+      <div>
+        <p style={{ fontSize: '11px', color: '#9A8E85', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: '600' }}>
+          Your Account
+        </p>
+        <p style={{ fontSize: '16px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.01em' }}>
+          {pageTitle}
+        </p>
+      </div>
+      <button
+        onClick={onOpen}
+        aria-label="Open account menu"
+        style={{
+          background: 'none',
+          border: '1.5px solid #E8E0D5',
+          borderRadius: '10px',
+          padding: '8px 12px',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#5A5048',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          lineHeight: 1,
+        }}
+      >
+        <span style={{ fontSize: '20px', lineHeight: 1 }}>☰</span>
+        <span style={{ fontSize: '12px', fontWeight: '600' }}>Menu</span>
+      </button>
+    </div>
   );
 }

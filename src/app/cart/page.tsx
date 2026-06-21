@@ -133,13 +133,28 @@ export default function CartPage() {
 
   return (
     <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen animate-fadeIn">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <h1 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-4xl font-bold mb-2">
+      <style>{`
+        @media (max-width: 768px) {
+          .cart-outer { padding-left: 16px !important; padding-right: 16px !important; padding-top: 20px !important; }
+          .cart-heading { font-size: 1.8rem !important; }
+          .cart-layout { grid-template-columns: 1fr !important; }
+          .cart-item-row { flex-wrap: wrap; gap: 12px !important; padding: 14px !important; }
+          .cart-item-cover { width: 52px !important; height: 68px !important; }
+          .cart-item-info { min-width: 0; flex: 1 1 100px; }
+          .cart-item-controls { flex: 0 0 auto; }
+          .cart-item-price { flex: 0 0 auto; }
+          .cart-summary-sticky { position: static !important; }
+          .cart-wa-btn { width: 100% !important; font-size: 0.9rem !important; }
+          .cart-call-btn { width: 100% !important; }
+        }
+      `}</style>
+      <div className="cart-outer max-w-7xl mx-auto px-6 py-12">
+        <h1 className="cart-heading" style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' , fontSize: '2.25rem', fontWeight: 700, marginBottom: 8 }}>
           Your Cart
         </h1>
         <p className="text-gray-500 mb-8">{totalItems} item{totalItems !== 1 ? 's' : ''}</p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="cart-layout grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map(({ book, quantity }, idx) => {
@@ -147,7 +162,7 @@ export default function CartPage() {
               return (
                 <div
                   key={book.id}
-                  className={`rounded-2xl p-5 flex gap-5 items-center animate-fadeInUp ${itemDelays[Math.min(idx, itemDelays.length - 1)]}`}
+                  className={`cart-item-row rounded-2xl p-5 flex gap-5 items-center animate-fadeInUp ${itemDelays[Math.min(idx, itemDelays.length - 1)]}`}
                   style={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e5e5',
@@ -159,7 +174,7 @@ export default function CartPage() {
                 >
                   {/* Cover */}
                   <div
-                    className="w-16 h-20 rounded-lg flex items-center justify-center shrink-0"
+                    className="cart-item-cover w-16 h-20 rounded-lg flex items-center justify-center shrink-0"
                     style={{ backgroundColor: book.coverColor }}
                   >
                     <span className="text-2xl">📚</span>
@@ -208,7 +223,7 @@ export default function CartPage() {
 
           {/* Order Summary — fadeInRight */}
           <div className="lg:col-span-1 animate-fadeInRight delay-200" style={{ opacity: 0, animationFillMode: 'forwards' }}>
-            <div className="rounded-2xl p-6 sticky top-24" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
+            <div className="cart-summary-sticky rounded-2xl p-6 sticky top-24" style={{ backgroundColor: 'white', border: '1px solid #e5e5e5' }}>
               <h2 style={{ fontFamily: 'var(--font-playfair), serif', color: '#C82333' }} className="text-xl font-bold mb-6">
                 Order Summary
               </h2>
@@ -244,7 +259,7 @@ export default function CartPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3.5 rounded-xl font-semibold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg mb-3 flex items-center justify-center gap-2"
+                className="cart-wa-btn w-full py-3.5 rounded-xl font-semibold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg mb-3 flex items-center justify-center gap-2"
                 style={{ backgroundColor: '#25D366', color: 'white', textDecoration: 'none', display: 'flex' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.111.547 4.1 1.505 5.832L0 24l6.335-1.481A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.793 9.793 0 01-5.028-1.382l-.36-.214-3.733.873.928-3.64-.235-.374A9.793 9.793 0 012.182 12C2.182 6.575 6.575 2.182 12 2.182S21.818 6.575 21.818 12 17.425 21.818 12 21.818z"/></svg>
                 Order via WhatsApp
@@ -252,7 +267,7 @@ export default function CartPage() {
 
               {/* Call button */}
               <a href="tel:+918779477753"
-                className="w-full py-2.5 rounded-xl font-medium text-sm mb-3 flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                className="cart-call-btn w-full py-2.5 rounded-xl font-medium text-sm mb-3 flex items-center justify-center gap-2 transition-all hover:opacity-90"
                 style={{ backgroundColor: '#f5f5f5', color: '#1a1a1a', textDecoration: 'none', border: '1px solid #e0e0e0' }}>
                 📞 Call to Order: +91 877 947 7753
               </a>

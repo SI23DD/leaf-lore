@@ -438,6 +438,34 @@ export default function ContactPage() {
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
+
+        @media (max-width: 768px) {
+          .contact-hero {
+            padding: 48px 16px 64px;
+          }
+          .hero-leaf { display: none; }
+          .contact-body {
+            padding: 32px 16px 48px;
+            gap: 24px;
+          }
+          .form-card {
+            padding: 24px 16px;
+          }
+          .faq-section {
+            padding: 0 16px;
+            margin-bottom: 48px;
+          }
+          .faq-trigger {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+          }
+          .faq-body { padding: 0 16px; }
+          .faq-body.open { padding: 0 16px 14px; }
+          .submit-btn {
+            width: 100%;
+            box-sizing: border-box;
+          }
+        }
       `}</style>
 
       {/* ── Hero ── */}

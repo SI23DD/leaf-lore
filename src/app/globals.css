@@ -138,3 +138,48 @@
 .marquee-strip { background: #8B0000; color: white; padding: 8px 0; overflow: hidden; }
 .marquee-strip .marquee-content { display: inline-flex; gap: 48px; animation: marquee-scroll 25s linear infinite; white-space: nowrap; font-size: 13px; font-weight: 500; }
 @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── Mobile Utilities ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: block !important; }
+  .show-mobile-flex { display: flex !important; }
+  .full-width-mobile { width: 100% !important; }
+  .col-1-mobile { grid-template-columns: 1fr !important; }
+  .col-2-mobile { grid-template-columns: 1fr 1fr !important; }
+  .stack-mobile { flex-direction: column !important; }
+  .center-mobile { text-align: center !important; }
+  .p-mobile { padding: 16px !important; }
+  .no-gap-mobile { gap: 0 !important; }
+}
+
+/* Drawer overlay */
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 998; opacity: 0; transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+/* Slide-in drawer */
+.drawer {
+  position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 999; background: #fff; box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+  transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-right {
+  left: auto; right: 0; transform: translateX(100%);
+}
+.drawer-right.open { transform: translateX(0); }
+
+/* Mobile scroll sections */
+@media (max-width: 768px) {
+  .mobile-scroll {
+    display: flex; overflow-x: auto; gap: 12px;
+    padding-bottom: 8px; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-scroll::-webkit-scrollbar { display: none; }
+}

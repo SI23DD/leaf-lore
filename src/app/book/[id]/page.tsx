@@ -286,9 +286,67 @@ export default function BookDetailPage() {
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
+
+        /* ── Mobile responsive ── */
+        @media (max-width: 768px) {
+          .book-detail-outer { padding: 16px !important; padding-top: 20px !important; }
+
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+
+          .gallery-col { align-items: center; }
+          .gallery-main { max-width: 100% !important; width: 100% !important; }
+
+          .gallery-thumbs {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            flex-wrap: nowrap !important;
+            padding-bottom: 4px;
+          }
+          .gallery-thumb { min-width: 72px !important; flex: 0 0 72px !important; }
+
+          .qty-row-wrapper {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+            width: 100%;
+          }
+          .qty-row { width: 100%; justify-content: flex-start; }
+
+          .btn-row {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          .btn-cart, .btn-buy { min-width: unset !important; flex: unset !important; width: 100% !important; }
+          .btn-wish { width: 100% !important; height: 46px !important; }
+
+          .trust-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 8px !important;
+          }
+          .trust-badge { justify-content: center; }
+
+          .share-row { gap: 6px !important; }
+          .share-btn { flex: 1 1 auto; text-align: center; }
+
+          .tab-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .tab-btn { padding: 12px 14px !important; font-size: 0.85rem !important; }
+
+          .related-section .related-grid {
+            display: flex !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            gap: 12px !important;
+            padding-bottom: 8px;
+          }
+          .related-section .related-grid > * { min-width: 160px !important; flex: 0 0 160px !important; }
+        }
       `}</style>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="book-detail-outer max-w-7xl mx-auto px-6 py-12">
 
         {/* Breadcrumb */}
         <nav className="breadcrumb" aria-label="Breadcrumb">
@@ -302,7 +360,7 @@ export default function BookDetailPage() {
         </nav>
 
         {/* Main two-column grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', marginBottom: '0', alignItems: 'start' }}>
+        <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', marginBottom: '0', alignItems: 'start' }}>
 
           {/* LEFT: Image gallery */}
           <div className="gallery-col">
@@ -377,7 +435,7 @@ export default function BookDetailPage() {
             )}
 
             {/* Qty + wishlist row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', marginBottom: 8 }}>
+            <div className="qty-row-wrapper" style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#AAA', marginRight: 8 }}>Qty</span>
                 <div className="qty-row">
@@ -497,7 +555,7 @@ export default function BookDetailPage() {
             <h2 style={{ fontFamily: 'var(--font-playfair, Georgia, serif)', color: '#C82333', fontSize: '1.5rem', fontWeight: 700, marginBottom: 24 }}>
               You Might Also Like
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20 }}>
+            <div className="related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 20 }}>
               {related.map(b => <BookCard key={b.id} book={{ ...b, coverColor: b.cover_color } as never} />)}
             </div>
           </div>

@@ -221,7 +221,16 @@ export default function CategoriesPage() {
         .coll-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
         .coll-card:focus-visible { outline: 2px solid #C82333; }
         .coll-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        @media (max-width: 768px) { .coll-grid { grid-template-columns: 1fr; } .lang-row { flex-direction: column !important; } .lang-card { width: 100%; box-sizing: border-box; } }
+        @media (max-width: 768px) {
+          .coll-grid { grid-template-columns: 1fr; }
+          .lang-row { flex-direction: column !important; }
+          .lang-card { width: 100%; box-sizing: border-box; }
+          .cat-grid { grid-template-columns: repeat(2, 1fr); }
+          .cat-card { padding: 20px 12px 18px; }
+          .coll-card { padding: 24px 20px; }
+          .categories-section { padding-left: 16px !important; padding-right: 16px !important; }
+          .page-header { padding: 32px 16px 32px !important; }
+        }
         @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
       `}</style>
 
@@ -244,7 +253,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* ── Page header ──────────────────────────────────────────────────── */}
-      <div style={{ textAlign: 'center', padding: '56px 24px 48px', borderBottom: '1px solid #f0f0f0' }}>
+      <div className="page-header" style={{ textAlign: 'center', padding: '56px 24px 48px', borderBottom: '1px solid #f0f0f0' }}>
         <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C82333', margin: '0 0 12px' }}>
           Browse
         </p>
@@ -257,7 +266,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* ── Category grid ────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 24px 0' }}>
+      <div className="categories-section" style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 24px 0' }}>
         <div
           className="cat-grid"
           style={{
@@ -298,7 +307,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* ── Browse by Language ───────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 24px 0' }}>
+      <div className="categories-section" style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
           <div>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C82333', margin: '0 0 6px' }}>Filter by</p>
@@ -327,7 +336,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* ── Shop by Collection ───────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 24px 80px' }}>
+      <div className="categories-section" style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 24px 80px' }}>
         <div style={{ marginBottom: 24 }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C82333', margin: '0 0 6px' }}>Curated for you</p>
           <h2 style={{ fontSize: 24, fontWeight: 800, color: '#111', margin: 0, letterSpacing: '-0.01em' }}>Shop by Collection</h2>

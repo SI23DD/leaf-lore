@@ -4,6 +4,7 @@ import { useCart } from '@frontend/context/CartContext';
 import { useWishlist } from '@frontend/context/WishlistContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import MobileDrawer from './MobileDrawer';
 
 const navLinks: [string, string][] = [
   ['/', 'Home'],
@@ -295,40 +296,82 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile menu */}
-          {menuOpen && (
-            <div className="ll-mobile-menu">
-              <form
-                onSubmit={e => { handleSearch(e); setMenuOpen(false); }}
-                style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0', display: 'flex', gap: 8 }}
-              >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search books..."
-                  style={{ flex: 1, padding: '7px 12px', border: '1.5px solid #dee2e6', borderRadius: 4, fontSize: 13, outline: 'none' }}
-                />
-                <button
-                  type="submit"
-                  style={{ background: '#C82333', color: '#fff', border: 'none', borderRadius: 4, padding: '7px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Go
-                </button>
-              </form>
-              {navLinks.map(([href, label]) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className="ll-mobile-link"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Mobile search bar — shown below navbar row when search is active on small screens */}
+        {searchOpen && (
+          <div className="ll-mobile-search-bar">
+            <form onSubmit={handleSearch} style={{ display: 'flex', gap: 8, padding: '10px 16px', borderTop: '1px solid #f0f0f0' }}>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search books, authors..."
+                style={{ flex: 1, padding: '7px 12px', border: '1.5px solid #C82333', borderRadius: 4, fontSize: 13, outline: 'none' }}
+                autoFocus
+              />
+              <button type="submit" style={{ background: '#C82333', color: '#fff', border: 'none', borderRadius: 4, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                Search
+              </button>
+              <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#666' }}>×</button>
+            </form>
+          </div>
+        )}
+
+        {/* Mobile drawer */}
+        <MobileDrawer open={menuOpen} onClose={() => setMenuOpen(false)} title="Menu" width={280}>
+          <form
+            onSubmit={e => { handleSearch(e); setMenuOpen(false); }}
+            style={{ display: 'flex', gap: 8, marginBottom: 16 }}
+          >
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search books..."
+              style={{ flex: 1, padding: '7px 12px', border: '1.5px solid #dee2e6', borderRadius: 4, fontSize: 13, outline: 'none' }}
+            />
+            <button
+              type="submit"
+              style={{ background: '#C82333', color: '#fff', border: 'none', borderRadius: 4, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Go
+            </button>
+          </form>
+          <nav style={{ display: 'flex', flexDirection: 'column' }}>
+            {navLinks.map(([href, label]) => (
+              <Link
+                key={label}
+                href={href}
+                className="ll-mobile-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <div style={{ borderTop: '1px solid #f0f0f0', marginTop: 12, paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <Link href={userName ? '/account' : '/login'} className="ll-mobile-link" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              {userName ? userName.split(' ')[0] : 'Login / Sign Up'}
+            </Link>
+            <Link href="/wishlist" className="ll-mobile-link" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C82333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+            </Link>
+            <Link href="/cart" className="ll-mobile-link" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              Cart {totalItems > 0 && `(${totalItems})`}
+            </Link>
+          </div>
+        </MobileDrawer>
 
         {/* Marquee strip */}
         <div style={{ backgroundColor: '#8B0000', overflow: 'hidden', padding: '6px 0' }}>
@@ -346,6 +389,12 @@ export default function Navbar() {
           @media (max-width: 768px) {
             .ll-desktop-nav { display: none !important; }
             .ll-hamburger { display: flex !important; }
+            .ll-mobile-search-bar { display: block; background: #fff; }
+            /* Hide inline search bar on mobile — use the below-row one instead */
+            .ll-inline-search { display: none !important; }
+          }
+          @media (min-width: 769px) {
+            .ll-mobile-search-bar { display: none; }
           }
           @media (min-width: 1024px) {
             .ll-username-label { display: inline !important; }

@@ -5,7 +5,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@frontend/context/AuthContext';
-import AccountSidebar from '@frontend/components/AccountSidebar';
+import AccountSidebar, { AccountMobileNav } from '@frontend/components/AccountSidebar';
+import MobileDrawer from '@frontend/components/MobileDrawer';
 
 interface OrderItem {
   id: string;
@@ -60,6 +61,7 @@ export default function AccountDashboard() {
   const { user, loading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push('/login');
@@ -96,164 +98,197 @@ export default function AccountDashboard() {
   const firstName = user.name ? user.name.split(' ')[0] : 'Reader';
 
   return (
-    <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
-        <AccountSidebar />
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .account-layout { flex-direction: column !important; padding: 16px !important; }
+          .account-desktop-sidebar { display: none !important; }
+          .account-mobile-nav { display: flex !important; }
+          .stat-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+          .stat-grid > * { flex: unset !important; min-width: unset !important; }
+          .quick-links { flex-direction: column !important; }
+          .quick-links > * { min-width: unset !important; }
+          .account-table-wrap { overflow-x: auto !important; }
+        }
+        @media (min-width: 769px) {
+          .account-mobile-nav { display: none !important; }
+        }
+      `}</style>
 
-        <main style={{ flex: 1, minWidth: 0 }}>
-          {/* Welcome header */}
-          <div className="animate-fadeInUp" style={{ marginBottom: '28px' }}>
-            <p style={{ color: '#C82333', fontSize: '12px', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '700' }}>
-              Your Account
-            </p>
-            <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1C1C1C', lineHeight: '1.2', marginBottom: '4px', letterSpacing: '-0.02em' }}>
-              Welcome back, {firstName}.
-            </h1>
-            <p style={{ color: '#6B7280', fontSize: '14px' }}>
-              Here&apos;s what&apos;s been happening with your orders.
-            </p>
+      <div style={{ backgroundColor: '#F8F9FA', minHeight: '100vh', padding: '40px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <div className="account-layout" style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+
+          {/* Desktop sidebar */}
+          <div className="account-desktop-sidebar">
+            <AccountSidebar />
           </div>
 
-          {/* Stats row */}
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '28px', flexWrap: 'wrap' }}>
-            <StatCard value={String(myOrders.length)} label="Total Orders" delay="delay-100" icon="📦" />
-            <StatCard value={`₹${totalSpent.toLocaleString('en-IN')}`} label="Amount Spent" delay="delay-200" icon="💳" />
-            <StatCard value={String(booksRead)} label="Books Received" delay="delay-300" icon="📚" />
-            <StatCard value="—" label="Wishlist Items" delay="delay-400" icon="🔖" />
-          </div>
+          {/* Mobile drawer */}
+          <MobileDrawer open={sidebarOpen} onClose={() => setSidebarOpen(false)} title="My Account" width={280}>
+            <AccountSidebar isMobile onClose={() => setSidebarOpen(false)} />
+          </MobileDrawer>
 
-          {/* Recent orders */}
-          <div
-            className="animate-fadeInUp delay-300"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}
-          >
-            <div style={{ padding: '16px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.01em' }}>
-                Recent Orders
-              </h2>
-              <Link href="/account/orders" style={{ fontSize: '13px', color: '#C82333', fontWeight: '600', textDecoration: 'none' }}>
-                View all →
-              </Link>
+          <main style={{ flex: 1, minWidth: 0 }}>
+            {/* Mobile top bar */}
+            <div className="account-mobile-nav">
+              <AccountMobileNav onOpen={() => setSidebarOpen(true)} pageTitle={`Welcome, ${firstName}`} />
             </div>
 
-            {fetching ? (
-              <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="skeleton" style={{ height: '48px', borderRadius: '6px' }} />
-                ))}
-              </div>
-            ) : recentOrders.length === 0 ? (
-              <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-                <div style={{ fontSize: '36px', marginBottom: '10px' }}>📖</div>
-                <p style={{ fontSize: '16px', fontWeight: '600', color: '#1C1C1C', marginBottom: '4px' }}>No orders yet</p>
-                <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '18px' }}>
-                  Your reading journey starts with the first book.
-                </p>
-                <Link
-                  href="/shop"
-                  style={{
-                    display: 'inline-block',
-                    padding: '10px 24px',
-                    backgroundColor: '#C82333',
-                    color: '#FFFFFF',
-                    borderRadius: '100px',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Browse Books
+            {/* Welcome header */}
+            <div className="animate-fadeInUp" style={{ marginBottom: '28px' }}>
+              <p style={{ color: '#C82333', fontSize: '12px', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '700' }}>
+                Your Account
+              </p>
+              <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1C1C1C', lineHeight: '1.2', marginBottom: '4px', letterSpacing: '-0.02em' }}>
+                Welcome back, {firstName}.
+              </h1>
+              <p style={{ color: '#6B7280', fontSize: '14px' }}>
+                Here&apos;s what&apos;s been happening with your orders.
+              </p>
+            </div>
+
+            {/* Stats row */}
+            <div className="stat-grid" style={{ display: 'flex', gap: '12px', marginBottom: '28px', flexWrap: 'wrap' }}>
+              <StatCard value={String(myOrders.length)} label="Total Orders" delay="delay-100" icon="📦" />
+              <StatCard value={`₹${totalSpent.toLocaleString('en-IN')}`} label="Amount Spent" delay="delay-200" icon="💳" />
+              <StatCard value={String(booksRead)} label="Books Received" delay="delay-300" icon="📚" />
+              <StatCard value="—" label="Wishlist Items" delay="delay-400" icon="🔖" />
+            </div>
+
+            {/* Recent orders */}
+            <div
+              className="animate-fadeInUp delay-300"
+              style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}
+            >
+              <div style={{ padding: '16px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#1C1C1C', letterSpacing: '-0.01em' }}>
+                  Recent Orders
+                </h2>
+                <Link href="/account/orders" style={{ fontSize: '13px', color: '#C82333', fontWeight: '600', textDecoration: 'none' }}>
+                  View all →
                 </Link>
               </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                  <thead>
-                    <tr style={{ backgroundColor: '#F8F9FA' }}>
-                      {['Order', 'Date', 'Books', 'Total', 'Status'].map((h) => (
-                        <th
-                          key={h}
-                          style={{
-                            padding: '10px 20px',
-                            textAlign: 'left',
-                            color: '#6B7280',
-                            fontWeight: '700',
-                            fontSize: '11px',
-                            letterSpacing: '0.7px',
-                            textTransform: 'uppercase',
-                          }}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentOrders.map((order, idx) => {
-                      const sc = STATUS_COLORS[order.status] || STATUS_COLORS.Pending;
-                      const bookCount = order.order_items?.reduce((s, i) => s + i.quantity, 0) ?? 0;
-                      const date = new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-                      return (
-                        <tr
-                          key={order.id}
-                          style={{ borderTop: '1px solid #F3F4F6', cursor: 'pointer', transition: 'background-color 0.1s' }}
-                          onClick={() => router.push(`/account/orders/${order.id}`)}
-                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FFF5F5'; }}
-                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
-                        >
-                          <td style={{ padding: '13px 20px', fontFamily: 'monospace', fontSize: '11px', color: '#6B7280' }}>
-                            #{order.id.slice(0, 8).toUpperCase()}
-                          </td>
-                          <td style={{ padding: '13px 20px', color: '#374151' }}>{date}</td>
-                          <td style={{ padding: '13px 20px', color: '#374151' }}>{bookCount} book{bookCount !== 1 ? 's' : ''}</td>
-                          <td style={{ padding: '13px 20px', fontWeight: '700', color: '#1C1C1C' }}>₹{order.total_amount.toLocaleString('en-IN')}</td>
-                          <td style={{ padding: '13px 20px' }}>
-                            <span style={{ backgroundColor: sc.bg, color: sc.text, padding: '3px 9px', borderRadius: '100px', fontSize: '11px', fontWeight: '700' }}>
-                              {order.status}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
 
-          {/* Quick links */}
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            {[
-              { href: '/account/profile', label: 'Edit Profile', desc: 'Update your name, phone, address', icon: '✏️' },
-              { href: '/account/settings', label: 'Preferences', desc: 'Notifications & privacy settings', icon: '🔧' },
-            ].map(({ href, label, desc, icon }, i) => (
-              <Link
-                key={href}
-                href={href}
-                className={`animate-fadeInUp hover-lift`}
-                style={{
-                  animationDelay: `${0.4 + i * 0.1}s`,
-                  flex: '1',
-                  minWidth: '200px',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E5E7EB',
-                  borderRadius: '8px',
-                  padding: '18px 20px',
-                  textDecoration: 'none',
-                  display: 'block',
-                  transition: 'border-color 0.15s',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#C82333'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#E5E7EB'; }}
-              >
-                <div style={{ fontSize: '20px', marginBottom: '8px' }}>{icon}</div>
-                <p style={{ fontWeight: '700', color: '#1C1C1C', fontSize: '14px', marginBottom: '3px' }}>{label}</p>
-                <p style={{ color: '#6B7280', fontSize: '12px' }}>{desc}</p>
-              </Link>
-            ))}
-          </div>
-        </main>
+              {fetching ? (
+                <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="skeleton" style={{ height: '48px', borderRadius: '6px' }} />
+                  ))}
+                </div>
+              ) : recentOrders.length === 0 ? (
+                <div style={{ padding: '48px 24px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '36px', marginBottom: '10px' }}>📖</div>
+                  <p style={{ fontSize: '16px', fontWeight: '600', color: '#1C1C1C', marginBottom: '4px' }}>No orders yet</p>
+                  <p style={{ color: '#6B7280', fontSize: '13px', marginBottom: '18px' }}>
+                    Your reading journey starts with the first book.
+                  </p>
+                  <Link
+                    href="/shop"
+                    style={{
+                      display: 'inline-block',
+                      padding: '10px 24px',
+                      backgroundColor: '#C82333',
+                      color: '#FFFFFF',
+                      borderRadius: '100px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Browse Books
+                  </Link>
+                </div>
+              ) : (
+                <div className="account-table-wrap" style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#F8F9FA' }}>
+                        {['Order', 'Date', 'Books', 'Total', 'Status'].map((h) => (
+                          <th
+                            key={h}
+                            style={{
+                              padding: '10px 20px',
+                              textAlign: 'left',
+                              color: '#6B7280',
+                              fontWeight: '700',
+                              fontSize: '11px',
+                              letterSpacing: '0.7px',
+                              textTransform: 'uppercase',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentOrders.map((order) => {
+                        const sc = STATUS_COLORS[order.status] || STATUS_COLORS.Pending;
+                        const bookCount = order.order_items?.reduce((s, i) => s + i.quantity, 0) ?? 0;
+                        const date = new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                        return (
+                          <tr
+                            key={order.id}
+                            style={{ borderTop: '1px solid #F3F4F6', cursor: 'pointer', transition: 'background-color 0.1s' }}
+                            onClick={() => router.push(`/account/orders/${order.id}`)}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = '#FFF5F5'; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
+                          >
+                            <td style={{ padding: '13px 20px', fontFamily: 'monospace', fontSize: '11px', color: '#6B7280', whiteSpace: 'nowrap' }}>
+                              #{order.id.slice(0, 8).toUpperCase()}
+                            </td>
+                            <td style={{ padding: '13px 20px', color: '#374151', whiteSpace: 'nowrap' }}>{date}</td>
+                            <td style={{ padding: '13px 20px', color: '#374151', whiteSpace: 'nowrap' }}>{bookCount} book{bookCount !== 1 ? 's' : ''}</td>
+                            <td style={{ padding: '13px 20px', fontWeight: '700', color: '#1C1C1C', whiteSpace: 'nowrap' }}>₹{order.total_amount.toLocaleString('en-IN')}</td>
+                            <td style={{ padding: '13px 20px' }}>
+                              <span style={{ backgroundColor: sc.bg, color: sc.text, padding: '3px 9px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', whiteSpace: 'nowrap' }}>
+                                {order.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Quick links */}
+            <div className="quick-links" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              {[
+                { href: '/account/profile', label: 'Edit Profile', desc: 'Update your name, phone, address', icon: '✏️' },
+                { href: '/account/settings', label: 'Preferences', desc: 'Notifications & privacy settings', icon: '🔧' },
+              ].map(({ href, label, desc, icon }, i) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="animate-fadeInUp hover-lift"
+                  style={{
+                    animationDelay: `${0.4 + i * 0.1}s`,
+                    flex: '1',
+                    minWidth: '200px',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    padding: '18px 20px',
+                    textDecoration: 'none',
+                    display: 'block',
+                    transition: 'border-color 0.15s',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#C82333'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#E5E7EB'; }}
+                >
+                  <div style={{ fontSize: '20px', marginBottom: '8px' }}>{icon}</div>
+                  <p style={{ fontWeight: '700', color: '#1C1C1C', fontSize: '14px', marginBottom: '3px' }}>{label}</p>
+                  <p style={{ color: '#6B7280', fontSize: '12px' }}>{desc}</p>
+                </Link>
+              ))}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
