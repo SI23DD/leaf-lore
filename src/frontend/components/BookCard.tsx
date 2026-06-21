@@ -16,13 +16,13 @@ export default function BookCard({ book, discount }: BookCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [added, setAdded] = useState(false);
 
-  // Priority: 1. image_url (admin pasted) → 2. ISBN → 3. title search → 4. color fallback
+  // Priority: 1. image_url (admin pasted) → 2. ISBN → 3. color fallback (NO title search — causes wrong covers)
   const coverUrl = !imgError
     ? (book as Book & { image_url?: string }).image_url
       ? (book as Book & { image_url?: string }).image_url!
       : book.isbn
         ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
-        : `https://covers.openlibrary.org/b/title/${encodeURIComponent(book.title)}-M.jpg`
+        : null
     : null;
 
   const isSoldOut = book.stock === 0;

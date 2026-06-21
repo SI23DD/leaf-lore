@@ -1,18 +1,17 @@
 'use client';
 import Link from 'next/link';
-import { useRef } from 'react';
-import { books } from '@frontend/data/books';
+import { useRef, useEffect, useState } from 'react';
 import BookCard from '@frontend/components/BookCard';
 
-// ── Data slices ───────────────────────────────────────────────────────────────
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-const selfHelpBooks = books.filter(b => b.genre === 'Self-help').slice(0, 5);
-const fictionBooks  = books.filter(b => b.genre === 'Fiction').slice(0, 5);
-const romanceBooks  = books.filter(b => b.genre === 'Romance').slice(0, 5);
-const mangaBooks    = books.filter(b => b.genre === 'Manga').slice(0, 5);
-const hindiBooks    = books.filter(b => b.language === 'Hindi').slice(0, 5);
-
-const heroCoverBooks = [books[0], books[6], books[17]]; // Midnight Library, Norwegian Wood, Alchemist
+// Books with known ISBNs for hero display
+const HERO_ISBNS = [
+  { isbn: '9780735211292', title: 'Atomic Habits',       coverColor: '#2D5016', id: 'hero1' },
+  { isbn: '9780375704024', title: 'Norwegian Wood',      coverColor: '#2C3E50', id: 'hero2' },
+  { isbn: '9780062315007', title: 'The Alchemist',       coverColor: '#B7950B', id: 'hero3' },
+  { isbn: '9781612680194', title: 'Rich Dad Poor Dad',   coverColor: '#C41E3A', id: 'hero4' },
+];
 
 const authorCards = [
   { name: 'Matt Haig',           initial: 'M', color: '#1B4332' },
@@ -35,17 +34,31 @@ const categories = [
 
 // ── Reusable: horizontal scroll book section ──────────────────────────────────
 
-function BookSection({
-  title,
-  slug,
-  bookList,
-  discount,
-}: {
-  title: string;
-  slug: string;
-  bookList: typeof books;
-  discount: number;
+interface ApiBook {
+  id: string; title: string; author: string; price: number;
+  language: string; genre: string; rating: number;
+  description: string; cover_color: string; stock: number;
+  isbn?: string; image_url?: string;
+}
+
+function useBooks(genre?: string, language?: string) {
+  const [books, setBooks] = useState<ApiBook[]>([]);
+  useEffect(() => {
+    const params = new URLSearchParams({ limit: '6' });
+    if (genre) params.set('genre', genre);
+    if (language) params.set('language', language);
+    fetch(`${API_URL}/api/books?${params}`)
+      .then(r => r.json())
+      .then(d => setBooks(d.books || []))
+      .catch(() => {});
+  }, [genre, language]);
+  return books;
+}
+
+function BookSection({ title, slug, genre, language, discount }: {
+  title: string; slug: string; genre?: string; language?: string; discount: number;
 }) {
+  const bookList = useBooks(genre, language);
   const ref = useRef<HTMLDivElement>(null);
   function scroll(dir: 'l' | 'r') {
     ref.current?.scrollBy({ left: dir === 'r' ? 220 : -220, behavior: 'smooth' });
@@ -58,39 +71,36 @@ function BookSection({
             {title}
           </h2>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => scroll('l')}
-              aria-label="Scroll left"
+            <button onClick={() => scroll('l')} aria-label="Scroll left"
               style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #C82333', background: '#fff', color: '#C82333', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, color 0.18s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#C82333'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff'; (e.currentTarget as HTMLButtonElement).style.color = '#C82333'; }}
-            >‹</button>
-            <button
-              onClick={() => scroll('r')}
-              aria-label="Scroll right"
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff'; (e.currentTarget as HTMLButtonElement).style.color = '#C82333'; }}>‹</button>
+            <button onClick={() => scroll('r')} aria-label="Scroll right"
               style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #C82333', background: '#fff', color: '#C82333', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s, color 0.18s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#C82333'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff'; (e.currentTarget as HTMLButtonElement).style.color = '#C82333'; }}
-            >›</button>
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff'; (e.currentTarget as HTMLButtonElement).style.color = '#C82333'; }}>›</button>
           </div>
         </div>
-        <div
-          ref={ref}
-          style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none' }}
-        >
-          {bookList.map(b => (
-            <div key={b.id} style={{ minWidth: 196, maxWidth: 196, flexShrink: 0 }}>
-              <BookCard book={b} discount={discount} />
-            </div>
-          ))}
-        </div>
+        {bookList.length === 0 ? (
+          <div style={{ display: 'flex', gap: 16 }}>
+            {[1,2,3,4,5].map(i => (
+              <div key={i} style={{ minWidth: 196, height: 300, borderRadius: 8, background: '#f0f0f0', flexShrink: 0 }} className="skeleton" />
+            ))}
+          </div>
+        ) : (
+          <div ref={ref} style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none' }}>
+            {bookList.map(b => (
+              <div key={b.id} style={{ minWidth: 196, maxWidth: 196, flexShrink: 0 }}>
+                <BookCard book={{ ...b, coverColor: b.cover_color } as never} discount={discount} />
+              </div>
+            ))}
+          </div>
+        )}
         <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <Link
-            href={`/shop?genre=${slug}`}
+          <Link href={`/shop${slug}`}
             style={{ display: 'inline-block', background: '#C82333', color: '#fff', padding: '10px 32px', borderRadius: 25, fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'background 0.18s' }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#A71D2A'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#C82333'; }}
-          >
+            onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#C82333'; }}>
             View All
           </Link>
         </div>
@@ -175,32 +185,25 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right — Real book cover images */}
+          {/* Right — Real book cover images using HERO_ISBNS */}
           <div className="hp-hero-books" style={{ display: 'flex', gap: 16, alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 8 }}>
-            {[
-              { book: heroCoverBooks[0], rot: '-6deg', scale: '0.92', delay: '0s', isbn: heroCoverBooks[0].isbn },
-              { book: heroCoverBooks[1], rot: '2deg',  scale: '1',    delay: '1.2s', isbn: heroCoverBooks[1].isbn },
-              { book: heroCoverBooks[2], rot: '8deg',  scale: '0.94', delay: '2.4s', isbn: heroCoverBooks[2].isbn },
-              { book: books[1], rot: '-3deg', scale: '0.88', delay: '0.6s', isbn: books[1].isbn },
-            ].map(({ book, rot, scale, isbn }, i) => (
-              <Link key={book.id} href={`/book/${book.id}`}
+            {HERO_ISBNS.map(({ isbn, title, coverColor, id }, i) => {
+              const rot = ['-6deg', '2deg', '8deg', '-3deg'][i];
+              const scale = ['0.92', '1', '0.94', '0.88'][i];
+              return (
+              <div key={id}
                 className="hp-book-float"
-                style={{ '--rot': rot, display: 'block', width: 120, height: 178, borderRadius: 6, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', transform: `rotate(${rot}) scale(${scale})`, textDecoration: 'none', flexShrink: 0, position: 'relative', zIndex: i === 1 ? 3 : 1 } as React.CSSProperties}>
-                {isbn ? (
-                  <img src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`} alt={book.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.parentElement!.style.background = book.coverColor); }}
-                  />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', background: book.coverColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, textAlign: 'center', padding: '0 8px' }}>{book.title}</span>
-                  </div>
-                )}
+                style={{ '--rot': rot, display: 'block', width: 120, height: 178, borderRadius: 6, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', transform: `rotate(${rot}) scale(${scale})`, flexShrink: 0, position: 'relative', zIndex: i === 1 ? 3 : 1, background: coverColor } as React.CSSProperties}>
+                <img src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`} alt={title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                />
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', padding: '20px 8px 8px' }}>
-                  <p style={{ color: '#fff', fontSize: 9, fontWeight: 700, textAlign: 'center', lineHeight: 1.3, margin: 0 }}>{book.title}</p>
+                  <p style={{ color: '#fff', fontSize: 9, fontWeight: 700, textAlign: 'center', lineHeight: 1.3, margin: 0 }}>{title}</p>
                 </div>
-              </Link>
-            ))}
+              </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -247,12 +250,12 @@ export default function HomePage() {
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
       {/* ── 3. Self-Help On Sale ────────────────────────────────────────────── */}
-      <BookSection title="Self-Help On Sale" slug="Self-help" bookList={selfHelpBooks} discount={15} />
+      <BookSection title="Self-Help On Sale" slug="?genre=Self-help" genre="Self-help" discount={15} />
 
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
       {/* ── 4. Fiction On Sale ─────────────────────────────────────────────── */}
-      <BookSection title="Fiction On Sale" slug="Fiction" bookList={fictionBooks} discount={10} />
+      <BookSection title="Fiction On Sale" slug="?genre=Fiction" genre="Fiction" discount={10} />
 
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
@@ -298,17 +301,17 @@ export default function HomePage() {
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
       {/* ── 6. Romance On Sale ─────────────────────────────────────────────── */}
-      <BookSection title="Romance On Sale" slug="Romance" bookList={romanceBooks} discount={12} />
+      <BookSection title="Romance On Sale" slug="?genre=Romance" genre="Romance" discount={12} />
 
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
       {/* ── 7. Manga Sets ──────────────────────────────────────────────────── */}
-      <BookSection title="Manga Sets" slug="Manga" bookList={mangaBooks} discount={8} />
+      <BookSection title="Manga Sets" slug="?genre=Manga" genre="Manga" discount={8} />
 
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
       {/* ── 8. Hindi Books ─────────────────────────────────────────────────── */}
-      <BookSection title="Hindi Books" slug="Hindi" bookList={hindiBooks} discount={10} />
+      <BookSection title="Hindi Books" slug="?language=Hindi" language="Hindi" discount={10} />
 
       <div style={{ height: 1, background: '#f0f0f0' }} />
 
