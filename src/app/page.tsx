@@ -113,91 +113,94 @@ export default function HomePage() {
       </div>
 
       {/* ── 1. Hero ──────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1920&q=80)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          position: 'relative',
-          padding: '80px 20px 72px',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Dark overlay so text is readable */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(130deg, rgba(139,0,0,0.88) 0%, rgba(200,35,51,0.82) 100%)', zIndex: 0 }} />
-        <style>{`
-          @keyframes hp-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-          @media (prefers-reduced-motion: reduce) {
-            .hp-marquee-inner { animation: none !important; }
-            .hp-book-float { animation: none !important; }
-          }
-          @keyframes hp-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-          .hp-book-float { animation: hp-float 4s ease-in-out infinite; }
-          .hp-book-float:nth-child(2) { animation-delay: 1.2s; }
-          .hp-book-float:nth-child(3) { animation-delay: 2.4s; }
-        `}</style>
+      <style>{`
+        @keyframes hp-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes hp-float { 0%,100%{transform:translateY(0) rotate(var(--rot))} 50%{transform:translateY(-12px) rotate(var(--rot))} }
+        @keyframes hp-fadein { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .hp-book-float { animation: hp-float 4s ease-in-out infinite; }
+        .hp-book-float:nth-child(2) { animation-delay: 1.2s; }
+        .hp-book-float:nth-child(3) { animation-delay: 2.4s; }
+        .hp-book-float:nth-child(4) { animation-delay: 0.6s; }
+        .hp-hero-title { animation: hp-fadein 0.7s ease both; }
+        .hp-hero-sub   { animation: hp-fadein 0.7s 0.15s ease both; }
+        .hp-hero-cta   { animation: hp-fadein 0.7s 0.3s ease both; }
+        @media (prefers-reduced-motion: reduce) {
+          .hp-book-float,.hp-hero-title,.hp-hero-sub,.hp-hero-cta { animation: none !important; }
+        }
+        @media (max-width: 768px) {
+          .hp-hero-books { display: none !important; }
+          .hp-hero-inner { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+      <section style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', padding: '72px 20px 64px', overflow: 'hidden', position: 'relative' }}>
+        {/* Subtle pattern overlay */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(200,35,51,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,193,7,0.08) 0%, transparent 40%)', pointerEvents: 'none' }} />
 
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'center', position: 'relative', zIndex: 1 }}>
-          {/* Left */}
+        <div className="hp-hero-inner" style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', position: 'relative', zIndex: 1 }}>
+
+          {/* Left — Text */}
           <div>
-            <p style={{ fontStyle: 'italic', fontSize: 52, fontWeight: 900, color: 'rgba(255,255,255,0.22)', lineHeight: 1, marginBottom: 4, letterSpacing: '-0.02em', fontFamily: 'Georgia, "Times New Roman", serif' }}>Summer Sale!</p>
-            <h1 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>
-              GET UPTO 40% OFF<br />ON YOUR ORDER
+            <div style={{ display: 'inline-block', background: 'rgba(200,35,51,0.2)', border: '1px solid rgba(200,35,51,0.4)', color: '#ff6b7a', fontSize: 12, fontWeight: 700, padding: '5px 14px', borderRadius: 20, marginBottom: 20, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              🎉 Summer Sale — Up to 40% Off
+            </div>
+            <h1 className="hp-hero-title" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 18, letterSpacing: '-0.02em' }}>
+              Your Ultimate<br />
+              <span style={{ color: '#FFC107' }}>Book Destination</span>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 15, marginBottom: 28, maxWidth: 380, lineHeight: 1.6 }}>
-              Discover stories across 5 languages — English, Hindi, Marathi, Japanese & Manga. From classics to contemporary favourites.
+            <p className="hp-hero-sub" style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, marginBottom: 32, maxWidth: 420, lineHeight: 1.7 }}>
+              Discover 45+ books across 5 languages — English, Hindi, Marathi, Japanese & Manga. From timeless classics to contemporary favourites.
             </p>
-            <Link
-              href="/shop"
-              style={{ display: 'inline-block', background: '#fff', color: '#C82333', padding: '13px 32px', borderRadius: 6, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 18px rgba(0,0,0,0.2)', transition: 'transform 0.18s, box-shadow 0.18s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.28)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 18px rgba(0,0,0,0.2)'; }}
-            >
-              Discover Now
-            </Link>
+            <div className="hp-hero-cta" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <Link href="/shop"
+                style={{ display: 'inline-block', background: '#C82333', color: '#fff', padding: '14px 36px', borderRadius: 6, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(200,35,51,0.4)', transition: 'transform 0.18s, box-shadow 0.18s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 28px rgba(200,35,51,0.5)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = ''; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 20px rgba(200,35,51,0.4)'; }}>
+                Shop Now →
+              </Link>
+              <Link href="/categories"
+                style={{ display: 'inline-block', background: 'transparent', color: '#fff', padding: '14px 28px', borderRadius: 6, fontWeight: 600, fontSize: 15, textDecoration: 'none', border: '1.5px solid rgba(255,255,255,0.3)', transition: 'border-color 0.18s, background 0.18s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#fff'; (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.08)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(255,255,255,0.3)'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; }}>
+                Browse Categories
+              </Link>
+            </div>
+            {/* Stats row */}
+            <div style={{ display: 'flex', gap: 32, marginTop: 40, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              {[['45+', 'Books'], ['5', 'Languages'], ['10', 'Genres'], ['500+', 'Readers']].map(([n, l]) => (
+                <div key={l}>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#FFC107' }}>{n}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>{l}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Right — book spine stack */}
-          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-end', paddingBottom: 8 }}>
-            {heroCoverBooks.map((book, i) => {
-              const rotations = [-6, 1, 7];
-              const scales = [0.90, 1, 0.92];
-              const zIndexes = [1, 3, 2];
-              return (
-                <Link
-                  key={book.id}
-                  href={`/book/${book.id}`}
-                  className="hp-book-float"
-                  aria-label={book.title}
-                  style={{
-                    display: 'block',
-                    width: 110,
-                    height: 164,
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    background: book.coverColor,
-                    boxShadow: '0 16px 40px rgba(0,0,0,0.5)',
-                    transform: `rotate(${rotations[i]}deg) scale(${scales[i]})`,
-                    zIndex: zIndexes[i],
-                    textDecoration: 'none',
-                    flexShrink: 0,
-                    position: 'relative',
-                  }}
-                >
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', justifyContent: 'flex-end',
-                    padding: '10px 8px',
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%)',
-                  }}>
-                    <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, textAlign: 'center', lineHeight: 1.3, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
-                      {book.title}
-                    </span>
+          {/* Right — Real book cover images */}
+          <div className="hp-hero-books" style={{ display: 'flex', gap: 16, alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 8 }}>
+            {[
+              { book: heroCoverBooks[0], rot: '-6deg', scale: '0.92', delay: '0s', isbn: heroCoverBooks[0].isbn },
+              { book: heroCoverBooks[1], rot: '2deg',  scale: '1',    delay: '1.2s', isbn: heroCoverBooks[1].isbn },
+              { book: heroCoverBooks[2], rot: '8deg',  scale: '0.94', delay: '2.4s', isbn: heroCoverBooks[2].isbn },
+              { book: books[1], rot: '-3deg', scale: '0.88', delay: '0.6s', isbn: books[1].isbn },
+            ].map(({ book, rot, scale, isbn }, i) => (
+              <Link key={book.id} href={`/book/${book.id}`}
+                className="hp-book-float"
+                style={{ '--rot': rot, display: 'block', width: 120, height: 178, borderRadius: 6, overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', transform: `rotate(${rot}) scale(${scale})`, textDecoration: 'none', flexShrink: 0, position: 'relative', zIndex: i === 1 ? 3 : 1 } as React.CSSProperties}>
+                {isbn ? (
+                  <img src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`} alt={book.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.parentElement!.style.background = book.coverColor); }}
+                  />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', background: book.coverColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, textAlign: 'center', padding: '0 8px' }}>{book.title}</span>
                   </div>
-                </Link>
-              );
-            })}
+                )}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)', padding: '20px 8px 8px' }}>
+                  <p style={{ color: '#fff', fontSize: 9, fontWeight: 700, textAlign: 'center', lineHeight: 1.3, margin: 0 }}>{book.title}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
