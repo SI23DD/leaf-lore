@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@frontend/data/books';
 import { useCart } from '@frontend/context/CartContext';
@@ -12,37 +12,38 @@ interface BookCardProps {
 export default function BookCard({ book, discount }: BookCardProps) {
   const { addToCart } = useCart();
   const router = useRouter();
-  const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
   const [added, setAdded] = useState(false);
-  const [coverSrc, setCoverSrc] = useState<string | null>(null);
+  const triedOL = useRef(false); // track if we already tried Open Library
 
   const bookAny = book as Book & { image_url?: string };
 
-  useEffect(() => {
-    // Priority 1: admin-pasted image URL
-    if (bookAny.image_url) { setCoverSrc(bookAny.image_url); return; }
-    if (!book.isbn) { setCoverSrc(null); return; }
+  // Direct Google Books cover URL (no API call needed!)
+  // Falls back to Open Library, then colored cover
+  const googleUrl = book.isbn
+    ? `https://books.google.com/books/content?vid=ISBN${book.isbn}&printsec=frontcover&img=1&zoom=2&source=gbs_api`
+    : null;
+  const openLibraryUrl = book.isbn
+    ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
+    : null;
 
-    // Priority 2: Try Google Books API (best coverage)
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn}&fields=items(volumeInfo/imageLinks)`)
-      .then(r => r.json())
-      .then(data => {
-        const thumb = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail;
-        if (thumb) {
-          // Use higher quality zoom=2, force https
-          setCoverSrc(thumb.replace('http:', 'https:').replace('zoom=1', 'zoom=2'));
-        } else {
-          // Priority 3: Open Library fallback
-          setCoverSrc(`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`);
-        }
-      })
-      .catch(() => {
-        setCoverSrc(`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`);
-      });
-  }, [book.isbn, bookAny.image_url]);
+  // Primary: admin URL > Google Books > null
+  const primaryUrl = bookAny.image_url || googleUrl;
 
-  const coverUrl = !imgError ? coverSrc : null;
+  function handleImgError(e: React.SyntheticEvent<HTMLImageElement>) {
+    const img = e.currentTarget;
+    if (!triedOL.current && openLibraryUrl && img.src !== openLibraryUrl) {
+      // Try Open Library as second chance
+      triedOL.current = true;
+      img.src = openLibraryUrl;
+    } else {
+      setImgFailed(true);
+    }
+  }
+
+  const showImage = primaryUrl && !imgFailed;
+  // imgFailed → show colored fallback
 
   const isSoldOut = book.stock === 0;
   const originalPrice = discount ? Math.round(book.price / (1 - discount / 100)) : null;
@@ -170,54 +171,44 @@ export default function BookCard({ book, discount }: BookCardProps) {
         ) : null}
 
         {/* Cover image */}
-        <div style={{ height: 260, position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-          {coverUrl ? (
-            <>
-              {!imgLoaded && (
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: book.coverColor || '#e9ecef',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 36,
-                }}>
-                  📚
-                </div>
-              )}
-              <img
-                src={coverUrl}
-                alt={book.title}
-                onError={() => setImgError(true)}
-                onLoad={() => setImgLoaded(true)}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  opacity: imgLoaded ? 1 : 0,
-                  transition: 'opacity 0.35s ease',
-                }}
-              />
-            </>
-          ) : (
+        <div style={{ height: 260, position: 'relative', overflow: 'hidden', flexShrink: 0, backgroundColor: book.coverColor || '#dee2e6' }}>
+          {/* Colored cover always visible as base — image loads on top */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            fontSize: 36, gap: 8,
+          }}>
+            <span>📚</span>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', textAlign: 'center', padding: '0 12px', fontWeight: 600, lineHeight: 1.3, margin: 0 }}>
+              {book.title}
+            </p>
+          </div>
+
+          {showImage && (
+            <img
+              src={primaryUrl!}
+              alt={book.title}
+              onError={handleImgError}
+              onLoad={() => setImgLoaded(true)}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                objectFit: 'cover', display: 'block',
+                opacity: imgLoaded ? 1 : 0,
+                transition: 'opacity 0.4s ease',
+              }}
+            />
+          )}
+
+          {/* Keep the old fallback div here just for when showImage is false and no color */}
+          {!showImage && false ? (
             <div
               className="ll-cover-fallback"
               style={{ backgroundColor: book.coverColor || '#dee2e6' }}
             >
               <span>📚</span>
-              <p style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'rgba(255,255,255,0.9)',
-                textAlign: 'center',
-                padding: '0 16px',
-                lineHeight: 1.4,
-                maxHeight: 56,
-                overflow: 'hidden',
-              }}>
-                {book.title}
-              </p>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Card body */}
