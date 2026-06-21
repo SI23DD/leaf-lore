@@ -4,8 +4,9 @@ import { useParams } from 'next/navigation';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 import Link from 'next/link';
 import { useCart } from '@frontend/context/CartContext';
+import { useWishlist } from '@frontend/context/WishlistContext';
 import BookCard from '@frontend/components/BookCard';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Book {
   id: string; title: string; author: string; price: number;
@@ -43,7 +44,8 @@ export default function BookDetailPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [qty, setQty] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
+  const { isWishlisted, toggle: toggleWishlist } = useWishlist();
+  const wishlisted = id ? isWishlisted(id as string) : false;
   const [activeThumb, setActiveThumb] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'details' | 'reviews'>('description');
   const [linkCopied, setLinkCopied] = useState(false);
@@ -63,19 +65,7 @@ export default function BookDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  useEffect(() => {
-    if (!id) return;
-    const wl: string[] = JSON.parse(localStorage.getItem('lore_wishlist') || '[]');
-    setWishlisted(wl.includes(id as string));
-  }, [id]);
-
-  const toggleWishlist = useCallback(() => {
-    if (!id) return;
-    const wl: string[] = JSON.parse(localStorage.getItem('lore_wishlist') || '[]');
-    const next = wishlisted ? wl.filter(x => x !== id) : [...wl, id as string];
-    localStorage.setItem('lore_wishlist', JSON.stringify(next));
-    setWishlisted(!wishlisted);
-  }, [id, wishlisted]);
+  // Wishlist now managed by WishlistContext — no local state needed
 
   const handleAddToCart = () => {
     if (!book) return;
@@ -410,7 +400,7 @@ export default function BookDetailPage() {
               </button>
               <button
                 className={`btn-wish${wishlisted ? ' active' : ''}`}
-                onClick={toggleWishlist}
+                onClick={() => id && toggleWishlist(id as string)}
                 aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                 aria-pressed={wishlisted}>
                 {wishlisted ? '❤️' : '🤍'}

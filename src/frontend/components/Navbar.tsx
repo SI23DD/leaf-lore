@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useCart } from '@frontend/context/CartContext';
+import { useWishlist } from '@frontend/context/WishlistContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 
@@ -15,6 +16,7 @@ const navLinks: [string, string][] = [
 
 export default function Navbar() {
   const { totalItems } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const pathname = usePathname();
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -248,6 +250,16 @@ export default function Navbar() {
                 <span style={{ display: 'none', fontSize: 12 }} className="ll-username-label">
                   {userName ? userName.split(' ')[0] : 'Login'}
                 </span>
+              </Link>
+
+              {/* Wishlist */}
+              <Link href="/wishlist" className="ll-icon-btn" title="Wishlist" style={{ position: 'relative', textDecoration: 'none' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill={wishlistCount > 0 ? '#C82333' : 'none'} stroke="#C82333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                {wishlistCount > 0 && (
+                  <span className="ll-cart-badge" style={{ backgroundColor: '#C82333' }}>{wishlistCount}</span>
+                )}
               </Link>
 
               {/* Cart */}

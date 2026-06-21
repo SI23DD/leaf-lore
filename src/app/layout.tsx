@@ -3,6 +3,7 @@ import { Poppins, Nunito } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@frontend/context/CartContext';
 import { AuthProvider } from '@frontend/context/AuthContext';
+import { WishlistProvider } from '@frontend/context/WishlistContext';
 import Navbar from '@frontend/components/Navbar';
 import Footer from '@frontend/components/Footer';
 
@@ -28,11 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${poppins.variable} ${nunito.variable}`}>
       <body style={{ backgroundColor: '#ffffff', fontFamily: 'var(--font-poppins), system-ui, sans-serif', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <AuthProvider>
-          <CartProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </CartProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </CartProvider>
+          </WishlistProvider>
         </AuthProvider>
       </body>
     </html>

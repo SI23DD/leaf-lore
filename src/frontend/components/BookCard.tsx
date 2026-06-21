@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@frontend/data/books';
 import { useCart } from '@frontend/context/CartContext';
+import { useWishlist } from '@frontend/context/WishlistContext';
 
 interface BookCardProps {
   book: Book;
@@ -11,7 +12,9 @@ interface BookCardProps {
 
 export default function BookCard({ book, discount }: BookCardProps) {
   const { addToCart } = useCart();
+  const { isWishlisted, toggle: toggleWishlist } = useWishlist();
   const router = useRouter();
+  const wishlisted = isWishlisted(book.id);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
   const [added, setAdded] = useState(false);
@@ -237,15 +240,31 @@ export default function BookCard({ book, discount }: BookCardProps) {
             )}
           </div>
 
-          {/* Add to cart button */}
-          <button
-            className={`ll-add-btn${added ? ' added' : ''}`}
-            onClick={handleAddToCart}
-            disabled={isSoldOut}
-            aria-label={isSoldOut ? 'Sold out' : `Add ${book.title} to cart`}
-          >
-            {isSoldOut ? 'Sold Out' : added ? '✓ Added!' : 'Add to Cart'}
-          </button>
+          {/* Buttons row */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              className={`ll-add-btn${added ? ' added' : ''}`}
+              onClick={handleAddToCart}
+              disabled={isSoldOut}
+              style={{ flex: 1 }}
+              aria-label={isSoldOut ? 'Sold out' : `Add ${book.title} to cart`}
+            >
+              {isSoldOut ? 'Sold Out' : added ? '✓ Added!' : 'Add to Cart'}
+            </button>
+            {/* Wishlist heart button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleWishlist(book.id); }}
+              title={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              style={{
+                width: 36, height: 36, borderRadius: 6, border: wishlisted ? '1.5px solid #C82333' : '1.5px solid #ddd',
+                background: wishlisted ? '#fff0f0' : '#fff', cursor: 'pointer',
+                fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, transition: 'all 0.18s ease',
+              }}
+            >
+              {wishlisted ? '❤️' : '🤍'}
+            </button>
+          </div>
         </div>
       </div>
     </>
