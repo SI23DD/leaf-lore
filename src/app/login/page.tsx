@@ -259,7 +259,7 @@ export default function LoginPage() {
               <div>
                 <div className="ll-pw-row">
                   <label htmlFor="ll-password" className="ll-field-label" style={{ margin: 0 }}>Password</label>
-                  <Link href="/forgot-password" className="ll-forgot">Forgot password?</Link>
+                  <span className="ll-forgot" style={{cursor:'default', opacity:0.5}}>Forgot password?</span>
                 </div>
                 <input
                   id="ll-password"
