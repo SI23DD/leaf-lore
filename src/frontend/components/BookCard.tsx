@@ -189,7 +189,16 @@ export default function BookCard({ book, discount }: BookCardProps) {
               src={primaryUrl!}
               alt={book.title}
               onError={handleImgError}
-              onLoad={() => setImgLoaded(true)}
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                // Google Books returns a tiny placeholder when no cover exists
+                // naturalWidth < 10 = 1px placeholder → treat as error
+                if (img.naturalWidth < 10 || img.naturalHeight < 10) {
+                  handleImgError(e as React.SyntheticEvent<HTMLImageElement>);
+                  return;
+                }
+                setImgLoaded(true);
+              }}
               style={{
                 position: 'absolute', inset: 0,
                 width: '100%', height: '100%',
