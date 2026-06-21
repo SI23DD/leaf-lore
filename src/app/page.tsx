@@ -115,11 +115,16 @@ export default function HomePage() {
       {/* ── 1. Hero ──────────────────────────────────────────────────────── */}
       <section
         style={{
-          background: 'linear-gradient(130deg, #8B0000 0%, #C82333 100%)',
-          padding: '56px 20px 52px',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1920&q=80)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          position: 'relative',
+          padding: '80px 20px 72px',
           overflow: 'hidden',
         }}
       >
+        {/* Dark overlay so text is readable */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(130deg, rgba(139,0,0,0.88) 0%, rgba(200,35,51,0.82) 100%)', zIndex: 0 }} />
         <style>{`
           @keyframes hp-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
           @media (prefers-reduced-motion: reduce) {
@@ -132,7 +137,7 @@ export default function HomePage() {
           .hp-book-float:nth-child(3) { animation-delay: 2.4s; }
         `}</style>
 
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'center' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'center', position: 'relative', zIndex: 1 }}>
           {/* Left */}
           <div>
             <p style={{ fontStyle: 'italic', fontSize: 52, fontWeight: 900, color: 'rgba(255,255,255,0.22)', lineHeight: 1, marginBottom: 4, letterSpacing: '-0.02em', fontFamily: 'Georgia, "Times New Roman", serif' }}>Summer Sale!</p>

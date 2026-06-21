@@ -16,8 +16,11 @@ export default function BookCard({ book, discount }: BookCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [added, setAdded] = useState(false);
 
-  const coverUrl = book.isbn && !imgError
-    ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
+  // Try ISBN first, then title-based Open Library cover as fallback
+  const coverUrl = !imgError
+    ? book.isbn
+      ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
+      : `https://covers.openlibrary.org/b/title/${encodeURIComponent(book.title)}-M.jpg`
     : null;
 
   const isSoldOut = book.stock === 0;
