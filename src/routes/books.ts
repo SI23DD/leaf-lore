@@ -26,7 +26,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 // POST /api/books
 router.post('/', async (req: Request, res: Response) => {
-  const { title, author, price, language, genre, rating, description, cover_color, stock } = req.body;
+  const { title, author, price, language, genre, rating, description, cover_color, stock, isbn, image_url } = req.body;
   if (!title || !author || !price || !language || !genre) {
     return res.status(400).json({ error: 'title, author, price, language, genre are required' });
   }
@@ -36,6 +36,8 @@ router.post('/', async (req: Request, res: Response) => {
     description: description || '',
     cover_color: cover_color || '#2D5016',
     stock: stock ? parseInt(stock) : 0,
+    isbn: isbn || null,
+    image_url: image_url || null,
   }).select().single();
   if (error) return res.status(500).json({ error: error.message });
   return res.status(201).json({ book: data });
@@ -50,7 +52,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // PUT /api/books/:id
 router.put('/:id', async (req: Request, res: Response) => {
-  const allowed = ['title', 'author', 'price', 'language', 'genre', 'rating', 'description', 'cover_color', 'stock'];
+  const allowed = ['title', 'author', 'price', 'language', 'genre', 'rating', 'description', 'cover_color', 'stock', 'isbn', 'image_url'];
   const updates: Record<string, unknown> = {};
   for (const key of allowed) {
     if (req.body[key] !== undefined) updates[key] = req.body[key];

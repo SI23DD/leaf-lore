@@ -13,7 +13,13 @@ const PORT = process.env.PORT || 4000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 app.use(cors({
-  origin: [FRONTEND_URL, 'http://localhost:3000', 'https://leaf-lore.vercel.app'],
+  origin: [
+    FRONTEND_URL,
+    'http://localhost:3000',
+    'https://leaf-lore.vercel.app',
+    'https://leaflore.in',
+    'https://www.leaflore.in',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
