@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({ title: '', author: '', price: '', language: 'English', genre: 'Fiction', description: '', cover_color: '#C82333', stock: '10' });
+  const [formData, setFormData] = useState({ title: '', author: '', price: '', language: 'English', genre: 'Fiction', description: '', cover_color: '#C82333', stock: '10', isbn: '', image_url: '' });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
 
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (!res.ok) { showToast(data.error || 'Failed to add book'); return; }
       showToast('✅ Book added successfully!');
-      setFormData({ title: '', author: '', price: '', language: 'English', genre: 'Fiction', description: '', cover_color: '#C82333', stock: '10' });
+      setFormData({ title: '', author: '', price: '', language: 'English', genre: 'Fiction', description: '', cover_color: '#C82333', stock: '10', isbn: '', image_url: '' });
       fetchData();
     } finally {
       setSaving(false);
@@ -309,8 +309,35 @@ export default function AdminDashboard() {
                   </select>
                 </div>
               ))}
+              {/* ISBN */}
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Cover Color</label>
+                <label className="text-xs font-medium text-gray-600 block mb-1">ISBN <span className="text-gray-400">(for auto cover image)</span></label>
+                <input type="text" value={formData.isbn}
+                  onChange={e => setFormData(p => ({ ...p, isbn: e.target.value }))}
+                  placeholder="e.g. 9780735211292"
+                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                  style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                  onFocus={e => e.currentTarget.style.borderColor = '#C82333'}
+                  onBlur={e => e.currentTarget.style.borderColor = '#e5e5e5'}
+                />
+                <p className="text-xs text-gray-400 mt-0.5">Search book on Google → copy ISBN from barcode</p>
+              </div>
+              {/* Image URL */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Cover Image URL <span className="text-gray-400">(optional)</span></label>
+                <input type="text" value={formData.image_url}
+                  onChange={e => setFormData(p => ({ ...p, image_url: e.target.value }))}
+                  placeholder="Paste image link from Google/anywhere"
+                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                  style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
+                  onFocus={e => e.currentTarget.style.borderColor = '#C82333'}
+                  onBlur={e => e.currentTarget.style.borderColor = '#e5e5e5'}
+                />
+                <p className="text-xs text-gray-400 mt-0.5">Right-click any book cover online → Copy image address</p>
+              </div>
+              {/* Cover Color fallback */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">Cover Color <span className="text-gray-400">(shows if no image found)</span></label>
                 <div className="flex items-center gap-2">
                   <input type="color" value={formData.cover_color}
                     onChange={e => setFormData(p => ({ ...p, cover_color: e.target.value }))}
