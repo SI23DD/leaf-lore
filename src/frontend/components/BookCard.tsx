@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@frontend/data/books';
 import { useCart } from '@frontend/context/CartContext';
@@ -15,15 +15,34 @@ export default function BookCard({ book, discount }: BookCardProps) {
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [added, setAdded] = useState(false);
+  const [coverSrc, setCoverSrc] = useState<string | null>(null);
 
-  // Priority: 1. image_url (admin pasted) → 2. ISBN → 3. color fallback (NO title search — causes wrong covers)
-  const coverUrl = !imgError
-    ? (book as Book & { image_url?: string }).image_url
-      ? (book as Book & { image_url?: string }).image_url!
-      : book.isbn
-        ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`
-        : null
-    : null;
+  const bookAny = book as Book & { image_url?: string };
+
+  useEffect(() => {
+    // Priority 1: admin-pasted image URL
+    if (bookAny.image_url) { setCoverSrc(bookAny.image_url); return; }
+    if (!book.isbn) { setCoverSrc(null); return; }
+
+    // Priority 2: Try Google Books API (best coverage)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${book.isbn}&fields=items(volumeInfo/imageLinks)`)
+      .then(r => r.json())
+      .then(data => {
+        const thumb = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail;
+        if (thumb) {
+          // Use higher quality zoom=2, force https
+          setCoverSrc(thumb.replace('http:', 'https:').replace('zoom=1', 'zoom=2'));
+        } else {
+          // Priority 3: Open Library fallback
+          setCoverSrc(`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`);
+        }
+      })
+      .catch(() => {
+        setCoverSrc(`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`);
+      });
+  }, [book.isbn, bookAny.image_url]);
+
+  const coverUrl = !imgError ? coverSrc : null;
 
   const isSoldOut = book.stock === 0;
   const originalPrice = discount ? Math.round(book.price / (1 - discount / 100)) : null;

@@ -233,52 +233,38 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {showForm ? (
-                <form onSubmit={placeOrder} className="mb-3 space-y-2">
-                  <input
-                    required
-                    value={checkoutForm.name}
-                    onChange={e => setCheckoutForm(p => ({ ...p, name: e.target.value }))}
-                    placeholder="Your name"
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                  />
-                  <input
-                    required
-                    type="email"
-                    value={checkoutForm.email}
-                    onChange={e => setCheckoutForm(p => ({ ...p, email: e.target.value }))}
-                    placeholder="Email address"
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all duration-200"
-                    style={{ border: '1.5px solid #e5e5e5', backgroundColor: '#ffffff' }}
-                    onFocus={e => { e.currentTarget.style.border = '1.5px solid #C82333'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(200,35,51,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.border = '1.5px solid #e5e5e5'; e.currentTarget.style.boxShadow = 'none'; }}
-                  />
-                  {error && <p className="text-xs text-red-500">{error}</p>}
-                  <button type="submit" disabled={placing}
-                    className="w-full py-3 rounded-full font-semibold text-sm transition-all hover:opacity-90 disabled:opacity-60 active:scale-95"
-                    style={{ backgroundColor: '#C82333', color: 'white' }}>
-                    {placing ? 'Placing Order…' : 'Confirm Order'}
-                  </button>
-                  <button type="button" onClick={() => setShowForm(false)}
-                    className="w-full text-xs text-gray-400 hover:text-gray-600 transition-colors duration-200">Cancel</button>
-                </form>
-              ) : (
-                <button onClick={() => setShowForm(true)}
-                  className="w-full py-3.5 rounded-full font-semibold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 mb-3"
-                  style={{ backgroundColor: '#C82333', color: 'white' }}>
-                  Proceed to Checkout
-                </button>
-              )}
+              {/* WhatsApp Order Button */}
+              <a
+                href={`https://wa.me/918779477753?text=${encodeURIComponent(
+                  `Hi! I want to order from Leaf & Lore 🍃\n\n` +
+                  items.map(i => `📚 ${i.book.title} × ${i.quantity} = ₹${i.book.price * i.quantity}`).join('\n') +
+                  `\n\nSubtotal: ₹${totalPrice}` +
+                  (shipping > 0 ? `\nShipping: ₹${shipping}` : '\nShipping: FREE 🎉') +
+                  `\n*Total: ₹${total}*\n\nPlease confirm my order and share delivery details.`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 rounded-xl font-semibold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg mb-3 flex items-center justify-center gap-2"
+                style={{ backgroundColor: '#25D366', color: 'white', textDecoration: 'none', display: 'flex' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.111.547 4.1 1.505 5.832L0 24l6.335-1.481A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.793 9.793 0 01-5.028-1.382l-.36-.214-3.733.873.928-3.64-.235-.374A9.793 9.793 0 012.182 12C2.182 6.575 6.575 2.182 12 2.182S21.818 6.575 21.818 12 17.425 21.818 12 21.818z"/></svg>
+                Order via WhatsApp
+              </a>
+
+              {/* Call button */}
+              <a href="tel:+918779477753"
+                className="w-full py-2.5 rounded-xl font-medium text-sm mb-3 flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                style={{ backgroundColor: '#f5f5f5', color: '#1a1a1a', textDecoration: 'none', border: '1px solid #e0e0e0' }}>
+                📞 Call to Order: +91 877 947 7753
+              </a>
 
               <Link href="/shop" className="block text-center text-sm hover:underline transition-opacity duration-200 hover:opacity-70" style={{ color: '#666666' }}>
                 ← Continue Shopping
               </Link>
 
-              <div className="mt-4 p-3 rounded-lg text-xs text-center" style={{ backgroundColor: '#f5f5f5', color: '#7A9E7E' }}>
-                🔒 Secure checkout · Free returns · 7-day policy
+              <div className="mt-4 p-3 rounded-lg text-xs text-center space-y-1" style={{ backgroundColor: '#f0fff4', color: '#276749', border: '1px solid #c6f6d5' }}>
+                <div>📱 Click WhatsApp to send your order instantly</div>
+                <div>💬 We&apos;ll confirm & share delivery details</div>
+                <div>📦 Free delivery above ₹500</div>
               </div>
             </div>
           </div>

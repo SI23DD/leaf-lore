@@ -12,6 +12,8 @@ interface Customer {
   created_at: string;
   order_count?: number;
   total_spent?: number;
+  type?: 'registered' | 'guest';
+  joined_at?: string;
 }
 
 const adminLinks = [
@@ -35,16 +37,27 @@ export default function AdminCustomersPage() {
   const fetchCustomers = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch all orders and aggregate by customer email
-      const res = await fetch(`${API_URL}/api/orders?limit=500`);
-      const data = await res.json();
-      const orders: Customer[] = data.orders || [];
+      // Fetch both registered users AND order customers in parallel
+      const [ordersRes, usersRes] = await Promise.all([
+        fetch(`${API_URL}/api/orders?limit=500`).then(r => r.json()),
+        fetch(`${API_URL}/api/users`).then(r => r.json()).catch(() => ({ users: [] })),
+      ]);
 
-      // Group by email
-      const map: Record<string, { name: string; email: string; count: number; spent: number; latest: string }> = {};
+      const orders = ordersRes.orders || [];
+      const registeredUsers: { id: string; name: string; email: string; role: string; created_at: string }[] = usersRes.users || [];
+
+      // Build map from orders
+      const map: Record<string, { name: string; email: string; count: number; spent: number; latest: string; type: 'registered' | 'guest'; joined_at?: string }> = {};
+
+      // Add registered users first
+      for (const u of registeredUsers) {
+        map[u.email] = { name: u.name, email: u.email, count: 0, spent: 0, latest: u.created_at, type: 'registered', joined_at: u.created_at };
+      }
+
+      // Merge order data
       for (const o of orders) {
         if (!map[o.customer_email]) {
-          map[o.customer_email] = { name: o.customer_name, email: o.customer_email, count: 0, spent: 0, latest: o.created_at };
+          map[o.customer_email] = { name: o.customer_name, email: o.customer_email, count: 0, spent: 0, latest: o.created_at, type: 'guest' };
         }
         map[o.customer_email].count += 1;
         map[o.customer_email].spent += o.total_amount;
@@ -59,6 +72,8 @@ export default function AdminCustomersPage() {
         created_at: c.latest,
         order_count: c.count,
         total_spent: c.spent,
+        type: c.type,
+        joined_at: c.joined_at,
       })).sort((a, b) => (b.total_spent ?? 0) - (a.total_spent ?? 0)));
     } finally {
       setLoading(false);
@@ -174,7 +189,14 @@ export default function AdminCustomersPage() {
                           <span style={{ fontWeight: 600, color: '#1a1a1a' }}>{c.customer_name}</span>
                         </div>
                       </td>
-                      <td style={{ padding: '12px 16px', color: '#555' }}>{c.customer_email}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ color: '#555', fontSize: 13 }}>{c.customer_email}</div>
+                        <span style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700,
+                          backgroundColor: c.type === 'registered' ? '#e8f5e9' : '#fff3e0',
+                          color: c.type === 'registered' ? '#2e7d32' : '#e65100' }}>
+                          {c.type === 'registered' ? '✓ Registered' : 'Guest'}
+                        </span>
+                      </td>
                       <td style={{ padding: '12px 16px' }}>
                         <span style={{ display: 'inline-block', padding: '2px 10px', borderRadius: 20, backgroundColor: '#fff3f4', color: '#C82333', fontWeight: 700, fontSize: 12 }}>
                           {c.order_count} order{(c.order_count ?? 0) > 1 ? 's' : ''}

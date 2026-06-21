@@ -142,9 +142,13 @@ export default function HomePage() {
           .hp-hero-inner { grid-template-columns: 1fr !important; }
         }
       `}</style>
-      <section style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', padding: '72px 20px 64px', overflow: 'hidden', position: 'relative' }}>
-        {/* Subtle pattern overlay */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(200,35,51,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,193,7,0.08) 0%, transparent 40%)', pointerEvents: 'none' }} />
+      <section style={{
+        backgroundImage: 'url(https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1920&q=80)',
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        padding: '72px 20px 64px', overflow: 'hidden', position: 'relative'
+      }}>
+        {/* Dark warm overlay - NOT blue */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(20,10,5,0.88) 0%, rgba(60,20,10,0.82) 50%, rgba(20,10,5,0.88) 100%)', pointerEvents: 'none' }} />
 
         <div className="hp-hero-inner" style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', position: 'relative', zIndex: 1 }}>
 
