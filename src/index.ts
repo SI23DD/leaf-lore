@@ -5,6 +5,7 @@ import booksRouter from './routes/books';
 import ordersRouter from './routes/orders';
 import authRouter from './routes/auth';
 import adminRouter from './routes/admin';
+import usersRouter from './routes/users';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/books', booksRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/users', usersRouter);
 
 // 404
 app.use('*', (_, res) => res.status(404).json({ error: 'Route not found' }));
